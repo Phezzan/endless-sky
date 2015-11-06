@@ -157,7 +157,7 @@ ship "Lightning Bug"
 		category "Light Warship"
 		"cost" 3200000
 		"shields" 6700
-		"hull" 1700
+		"hull" 3400
 		"required crew" 4
 		"bunks" 10
 		"mass" 220
@@ -213,7 +213,7 @@ ship "Aphid"
 		category "Light Freighter"
 		"cost" 570000
 		"shields" 1700
-		"hull" 1400
+		"hull" 2800
 		"required crew" 1
 		"bunks" 5
 		"mass" 100
@@ -263,7 +263,7 @@ ship "Water Bug"
 		category "Heavy Freighter"
 		"cost" 6500000
 		"shields" 7900
-		"hull" 4500
+		"hull" 9000
 		"required crew" 5
 		"bunks" 29
 		"mass" 270
@@ -323,7 +323,7 @@ ship "Shield Beetle"
 		category "Heavy Warship"
 		"cost" 17900000
 		"shields" 32000
-		"hull" 9800
+		"hull" 19600
 		"required crew" 47
 		"bunks" 95
 		"mass" 650

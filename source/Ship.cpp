@@ -597,8 +597,10 @@ bool Ship::Move(list<Effect> &effects)
 		// If you have a ramscoop, you recharge enough fuel to make one jump in
 		// a little less than a minute - enough to be an inconvenience without
 		// being totally aggravating.
-		if(attributes.Get("ramscoop"))
-			TransferFuel(-.03 * sqrt(attributes.Get("ramscoop")), nullptr);
+       
+        double ramscoop = attributes.Get("ramscoop");
+		if(ramscoop > 0.)
+			TransferFuel(sqrt(ramscoop) * -(0.01 + .001 * sqrt(velocity.Length())), nullptr);
 		
 		energy += attributes.Get("energy generation") - ionization;
 		energy = max(0., energy);
@@ -884,24 +886,36 @@ bool Ship::Move(list<Effect> &effects)
 		cloak = 0.;
 	
 	int requiredCrew = RequiredCrew();
-	if(pilotError)
-		--pilotError;
-	else if(pilotOkay)
-		--pilotOkay;
-	else if(requiredCrew && static_cast<int>(Random::Int(requiredCrew)) >= Crew())
+	int crew		 = Crew();
+	if(pilotCheck > 0)
+		pilotCheck--;
+	else if(pilotCheck < 0)
+		pilotCheck++;
+	else 
 	{
-		pilotError = 30;
-		Messages::Add("Your ship is moving erratically because you do not have enough crew to pilot it.");
+		int const rndCrew = (requiredCrew<1) ? 0: static_cast<int>(Random::Int(requiredCrew));
+		if(rndCrew > crew)
+		{
+            pilotCheck = -10 * requiredCrew + 5 * crew;
+            if (this->GetGovernment()->IsPlayer())
+                Messages::Add("Your ship is moving erratically because you do not have enough crew to pilot it.");
+		}
+		else 
+		{
+            pilotCheck = 30 + rndCrew;
+
+			// allow crew to repair the hull... slowly
+			if(hull > 0. && hull < maxHull && crew > rndCrew)
+				hull += (crew - rndCrew);
+		}
 	}
-	else
-		pilotOkay = 30;
 	
 	// This ship is not landing or entering hyperspace. So, move it. If it is
 	// disabled, all it can do is slow down to a stop.
 	double mass = Mass();
 	if(isDisabled)
 		velocity *= 1. - attributes.Get("drag") / mass;
-	else if(!pilotError)
+	else if(pilotCheck > 0)
 	{
 		double thrustCommand = commands.Has(Command::FORWARD) - commands.Has(Command::BACK);
 		if(thrustCommand)
@@ -991,7 +1005,7 @@ bool Ship::Move(list<Effect> &effects)
 			else if(target->IsDestroyed() || target->IsLanding() || target->IsHyperspacing())
 				isBoarding = false;
 		}
-		if(isBoarding && !pilotError)
+		if(isBoarding && pilotCheck > 0)
 		{
 			Angle facing = angle;
 			bool left = target->Unit().Cross(facing.Unit()) < 0.;
@@ -1089,8 +1103,8 @@ shared_ptr<Ship> Ship::Board(bool autoPlunder)
 		}
 		if(helped)
 		{
-			pilotError = 120;
-			victim->pilotError = 120;
+			pilotCheck = -120;
+			victim->pilotCheck = -120;
 		}
 		return autoPlunder ? shared_ptr<Ship>() : victim;
 	}
@@ -1112,7 +1126,7 @@ shared_ptr<Ship> Ship::Board(bool autoPlunder)
 		SetTargetShip(shared_ptr<Ship>());
 		
 		// Pause for two seconds before moving on.
-		pilotError = 120;
+		pilotCheck = -120;
 	}
 	
 	// Stop targeting this ship (so you will not board it again right away).
@@ -1427,7 +1441,7 @@ void Ship::Destroy()
 
 void Ship::Restore()
 {
-	hull = 0;
+	hull = 0.;
 	Recharge(true);
 }
 
@@ -1452,8 +1466,7 @@ void Ship::Recharge(bool atSpaceport)
 		crew = max(crew, RequiredCrew());
 		fuel = attributes.Get("fuel capacity");
 	}
-	pilotError = 0;
-	pilotOkay = 0;
+	pilotCheck = 0;
 	
 	if(!personality.IsDerelict())
 	{
@@ -2085,7 +2098,7 @@ void Ship::RemoveEscort(const Ship &ship)
 
 bool Ship::CannotAct() const
 {
-	return (zoom != 1. || isDisabled || hyperspaceCount || pilotError || cloak);
+	return (zoom != 1. || isDisabled || hyperspaceCount || (pilotCheck < 0) || cloak);
 }
 
 

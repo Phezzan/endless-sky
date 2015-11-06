@@ -210,7 +210,7 @@ ship "Pug Zibruka"
 		category "Light Warship"
 		"cost" 1900000
 		"shields" 4000
-		"hull" 1000
+		"hull" 2000
 		"required crew" 4
 		"bunks" 6
 		"mass" 240
@@ -252,7 +252,7 @@ ship "Pug Enfolta"
 		category "Light Warship"
 		"cost" 6300000
 		"shields" 6800
-		"hull" 1700
+		"hull" 3400
 		"required crew" 19
 		"bunks" 27
 		"mass" 410
@@ -299,7 +299,7 @@ ship "Pug Maboro"
 		category "Heavy Warship"
 		"cost" 9500000
 		"shields" 12600
-		"hull" 2700
+		"hull" 5400
 		"required crew" 54
 		"bunks" 87
 		"mass" 940

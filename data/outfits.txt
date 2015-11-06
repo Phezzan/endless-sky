@@ -51,43 +51,43 @@ outfit "D14-RN Shield Generator"
 	thumbnail "outfit/tiny shield"
 	"mass" 10
 	"outfit space" -10
-	"shield generation" .2
+	"shield generation" .25
 	description "This is the standard shield generator for fighters and interceptors, as well as for many non-combat starships. Although it is possible for a ship to have no shield generator at all, recharging its shield matrix only when landed in a hospitable spaceport, life in deep space is unpredictable enough that most pilots find shield generators to be well worth the space they take up."
 
 outfit "D23-QP Shield Generator"
 	category "Systems"
 	cost 35000
 	thumbnail "outfit/small shield"
-	"mass" 17
-	"outfit space" -17
-	"shield generation" .32
+	"mass" 16
+	"outfit space" -16
+	"shield generation" .42
 	description "This is a slightly more powerful shield generator than the standard model installed in most small ships. If combat lasts long enough, the increased recharge rate is enough to give you an edge, but recharging your shields completely will still take a long time."
 
 outfit "D41-HY Shield Generator"
 	category "Systems"
 	cost 65000
 	thumbnail "outfit/medium shield"
-	"mass" 25
-	"outfit space" -25
-	"shield generation" .51
+	"mass" 22
+	"outfit space" -22
+	"shield generation" .61
 	description "This is a more powerful shield generator designed for ships that are likely to see frequent combat, or that have such a large shield capacity that recharging them would take a long time with a smaller generator."
 
 outfit "D67-TM Shield Generator"
 	category "Systems"
 	cost 120000
 	thumbnail "outfit/large shield"
-	"mass" 35
-	"outfit space" -35
-	"shield generation" .82
+	"mass" 31
+	"outfit space" -31
+	"shield generation" .88
 	description "This shield generator is powerful enough that in combat against some particularly weak ships, they may not even be capable of depleting your shields as fast as they recharge."
 
 outfit "D94-YV Shield Generator"
 	category "Systems"
 	cost 200000
 	thumbnail "outfit/huge shield"
-	"mass" 50
-	"outfit space" -50
-	"shield generation" 1.31
+	"mass" 43
+	"outfit space" -43
+	"shield generation" 1.25
 	description "Warships use the D94-YV generator to outlast their opponents, but you can fit one in a smaller ship if you are willing to sacrifice engine power or weaponry to make space for it."
 
 outfit "D9999 Shield Generator"
@@ -96,7 +96,7 @@ outfit "D9999 Shield Generator"
 	thumbnail "outfit/huge shield"
 	"mass" 60
 	"outfit space" -60
-	"shield generation" 1.5
+	"shield generation" 1.8
 	description "This is the most powerful shield generator available in human	space. Because of their large size, D9000 shield generators are mostly used in large warships to outlast any tactical disadvantage an enemy might spring."
 
 outfit "S-270 Regenerator"
@@ -105,7 +105,7 @@ outfit "S-270 Regenerator"
 	thumbnail "outfit/small regenerator"
 	"mass" 12
 	"outfit space" -12
-	"shield generation" .6
+	"shield generation" .8
 	"energy generation" -.3
 	"heat generation" 2
 	description "A shield regenerator works by subtly modifying the geometry of your shield matrix in order to make your shields more malleable and therefore much easier to recharge. Unfortunately, this causes your shields to also become less efficient, which draws energy away from your other systems, even when not charging shields, and creates heat."
@@ -116,7 +116,7 @@ outfit "S-970 Regenerator"
 	thumbnail "outfit/large regenerator"
 	"mass" 37
 	"outfit space" -37
-	"shield generation" 2.3
+	"shield generation" 3
 	"energy generation" -.9
 	"heat generation" 6
 	description "The S-970 Shield Regenerator is an advanced type of shield recharging technology. Unfortunately, its power needs are rather high, and the shifts it makes in your shield configuration also result in some feedback that causes heat to build up in the regenerator, even when your shields are at full strength."
@@ -128,7 +128,7 @@ outfit "Ramscoop"
 	thumbnail "outfit/ramscoop"
 	"mass" 3
 	"outfit space" -6
-	"ramscoop" 2
+	"ramscoop" 1
 	description "In the early days of space exploration, when ships could travel through half a dozen systems before encountering an established colony where they could refuel, ramscoops were an essential piece of equipment, harvesting plasma from the solar wind to refill your hyperspace fuel tanks. Although you can install more than one ramscoop, additional ramscoops on a single ship are not as effective as the first."
 
 outfit "Ramscoop Adv"
@@ -137,7 +137,7 @@ outfit "Ramscoop Adv"
 	thumbnail "outfit/catalytic ramscoop"
 	"mass" 6
 	"outfit space" -10
-	"ramscoop" 4
+	"ramscoop" 2
 	description "An advanced Ramscoop designed for long range military scout vessels. With double the plasma concentration, it allows missions well beyond colonized space.
 
 outfit "Catalytic Ramscoop"

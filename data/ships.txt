@@ -14,7 +14,7 @@ ship "Aerie"
 		category "Light Warship"
 		"cost" 3500000
 		"shields" 5700
-		"hull" 1900
+		"hull" 3800
 		"required crew" 10
 		"bunks" 28
 		"mass" 130
@@ -66,7 +66,7 @@ ship "Argosy"
 		category "Light Freighter"
 		"cost" 1560000
 		"shields" 4200
-		"hull" 2600
+		"hull" 5200
 		"required crew" 2
 		"bunks" 14
 		"mass" 275
@@ -119,7 +119,7 @@ ship "Arrow"
 		category "Transport"
 		"cost" 1200000
 		"shields" 2000
-		"hull" 400
+		"hull" 800
 		"required crew" 1
 		"bunks" 6
 		"mass" 125
@@ -166,7 +166,7 @@ ship "Bactrian"
 		category "Heavy Warship"
 		"cost" 12600000
 		"shields" 17500
-		"hull" 8600
+		"hull" 17200
 		"required crew" 70
 		"bunks" 245
 		"mass" 940
@@ -228,7 +228,7 @@ ship "Bastion"
 		category "Light Warship"
 		"cost" 3560000
 		"shields" 6700
-		"hull" 4200
+		"hull" 8400
 		"required crew" 32
 		"bunks" 47
 		"mass" 580
@@ -283,7 +283,7 @@ ship "Behemoth"
 		category "Heavy Freighter"
 		"cost" 7800000
 		"shields" 7600
-		"hull" 6300
+		"hull" 12600
 		"required crew" 12
 		"bunks" 30
 		"mass" 540
@@ -335,7 +335,7 @@ ship "Berserker"
 		category "Interceptor"
 		"cost" 520000
 		"shields" 2200
-		"hull" 600
+		"hull" 1200
 		"required crew" 1
 		"bunks" 3
 		"mass" 110
@@ -380,7 +380,7 @@ ship "Blackbird"
 		category "Transport"
 		"cost" 2230000
 		"shields" 4400
-		"hull" 900
+		"hull" 1800
 		"required crew" 2
 		"bunks" 28
 		"mass" 220
@@ -425,7 +425,7 @@ ship "Bounder"
 		category "Transport"
 		"cost" 1140000
 		"shields" 2200
-		"hull" 700
+		"hull" 1400
 		"required crew" 2
 		"bunks" 17
 		"mass" 130
@@ -469,7 +469,7 @@ ship "Bulk Freighter"
 		category "Heavy Freighter"
 		"cost" 9400000
 		"shields" 4000
-		"hull" 7600
+		"hull" 15200
 		"required crew" 6
 		"bunks" 18
 		"mass" 870
@@ -525,7 +525,7 @@ ship "Carrier"
 		category "Heavy Warship"
 		"cost" 15200000
 		"shields" 21400
-		"hull" 8300
+		"hull" 16600
 		"required crew" 111
 		"bunks" 184
 		"mass" 910
@@ -596,7 +596,7 @@ ship "Clipper"
 		category "Light Freighter"
 		"cost" 900000
 		"shields" 2700
-		"hull" 800
+		"hull" 1600
 		"required crew" 1
 		"bunks" 9
 		"mass" 150
@@ -675,7 +675,7 @@ ship "Corvette"
 		category "Light Warship"
 		"cost" 4400000
 		"shields" 6100
-		"hull" 1200
+		"hull" 2400
 		"required crew" 8
 		"bunks" 32
 		"mass" 150
@@ -728,7 +728,7 @@ ship "Cruiser"
 		category "Heavy Warship"
 		"cost" 11200000
 		"shields" 19600
-		"hull" 6400
+		"hull" 12800
 		"required crew" 81
 		"bunks" 136
 		"mass" 680
@@ -791,7 +791,7 @@ ship "Dagger"
 		category "Fighter"
 		"cost" 129000
 		"shields" 900
-		"hull" 300
+		"hull" 600
 		"required crew" 1
 		"bunks" 1
 		"mass" 20
@@ -830,7 +830,7 @@ ship "Dreadnought"
 		category "Heavy Warship"
 		"cost" 11900000
 		"shields" 18100
-		"hull" 7300
+		"hull" 14600
 		"required crew" 84
 		"bunks" 147
 		"mass" 630
@@ -887,7 +887,7 @@ ship "Falcon"
 		category "Heavy Warship"
 		"cost" 10900000
 		"shields" 12800
-		"hull" 3700
+		"hull" 7400
 		"required crew" 52
 		"bunks" 75
 		"mass" 510
@@ -942,7 +942,7 @@ ship "Firebird"
 		category "Light Warship"
 		"cost" 3700000
 		"shields" 6400
-		"hull" 2800
+		"hull" 5600
 		"required crew" 7
 		"bunks" 22
 		"mass" 290
@@ -993,7 +993,7 @@ ship "Flivver"
 		category "Transport"
 		"cost" 180000
 		"shields" 1400
-		"hull" 200
+		"hull" 400
 		"required crew" 1
 		"bunks" 4
 		"mass" 40
@@ -1037,7 +1037,7 @@ ship "Freighter"
 		category "Light Freighter"
 		"cost" 730000
 		"shields" 2000
-		"hull" 2000
+		"hull" 4000
 		"required crew" 2
 		"bunks" 7
 		"mass" 240
@@ -1086,7 +1086,7 @@ ship "Frigate"
 		category "Light Warship"
 		"cost" 5200000
 		"shields" 8000
-		"hull" 2500
+		"hull" 5000
 		"required crew" 21
 		"bunks" 44
 		"mass" 310
@@ -1139,7 +1139,7 @@ ship "Fury"
 		category "Interceptor"
 		"cost" 490000
 		"shields" 2000
-		"hull" 400
+		"hull" 800
 		"required crew" 1
 		"bunks" 3
 		"mass" 70
@@ -1186,7 +1186,7 @@ ship "Gunboat"
 		category "Light Warship"
 		"cost" 3200000
 		"shields" 5800
-		"hull" 1400
+		"hull" 2800
 		"required crew" 7
 		"bunks" 12
 		"mass" 150
@@ -1234,7 +1234,7 @@ ship "Hauler"
 		category "Light Freighter"
 		"cost" 1430000
 		"shields" 2500
-		"hull" 3700
+		"hull" 6400
 		"required crew" 3
 		"bunks" 12
 		"mass" 250
@@ -1286,7 +1286,7 @@ ship "Hauler II"
 		category "Heavy Freighter"
 		"cost" 2340000
 		"shields" 2900
-		"hull" 5200
+		"hull" 10400
 		"required crew" 3
 		"bunks" 12
 		"mass" 360
@@ -1338,7 +1338,7 @@ ship "Hauler III"
 		category "Heavy Freighter"
 		"cost" 3260000
 		"shields" 3300
-		"hull" 6700
+		"hull" 13400
 		"required crew" 3
 		"bunks" 12
 		"mass" 470
@@ -1390,7 +1390,7 @@ ship "Hawk"
 		category "Interceptor"
 		"cost" 670000
 		"shields" 2500
-		"hull" 500
+		"hull" 1000
 		"required crew" 1
 		"bunks" 4
 		"mass" 133
@@ -1433,7 +1433,7 @@ ship "Heavy Shuttle"
 		category "Transport"
 		"cost" 320000
 		"shields" 700
-		"hull" 700
+		"hull" 1400
 		"required crew" 1
 		"bunks" 9
 		"mass" 100
@@ -1474,7 +1474,7 @@ ship "Lance"
 		category "Fighter"
 		"cost" 93000
 		"shields" 700
-		"hull" 400
+		"hull" 800
 		"required crew" 1
 		"bunks" 1
 		"mass" 30
@@ -1514,7 +1514,7 @@ ship "Leviathan"
 		category "Heavy Warship"
 		"cost" 9800000
 		"shields" 14400
-		"hull" 5000
+		"hull" 10000
 		"required crew" 43
 		"bunks" 64
 		"mass" 480
@@ -1567,7 +1567,7 @@ ship "Manta"
 		category "Light Warship"
 		"cost" 3400000
 		"shields" 5900
-		"hull" 1500
+		"hull" 3000
 		"required crew" 6
 		"bunks" 10
 		"mass" 170
@@ -1617,7 +1617,7 @@ ship "Mule"
 		category "Light Warship"
 		"cost" 2580000
 		"shields" 5400
-		"hull" 4400
+		"hull" 8800
 		"required crew" 6
 		"bunks" 43
 		"mass" 320
@@ -1670,7 +1670,7 @@ ship "Osprey"
 		category "Light Warship"
 		"cost" 4400000
 		"shields" 7200
-		"hull" 1600
+		"hull" 3200
 		"required crew" 9
 		"bunks" 24
 		"mass" 270
@@ -1721,7 +1721,7 @@ ship "Protector"
 		category "Heavy Warship"
 		"cost" 5500000
 		"shields" 9500
-		"hull" 6500
+		"hull" 13000
 		"required crew" 36
 		"bunks" 69
 		"mass" 500
@@ -1775,7 +1775,7 @@ ship "Quicksilver"
 		category "Light Warship"
 		"cost" 1590000
 		"shields" 3200
-		"hull" 800
+		"hull" 1600
 		"required crew" 3
 		"bunks" 6
 		"mass" 120
@@ -1821,7 +1821,7 @@ ship "Rainmaker"
 		category "Light Warship"
 		"cost" 1580000
 		"shields" 3500
-		"hull" 1200
+		"hull" 2400
 		"required crew" 7
 		"bunks" 14
 		"mass" 180
@@ -1871,7 +1871,7 @@ ship "Raven"
 		category "Light Warship"
 		"cost" 2000000
 		"shields" 4700
-		"hull" 1400
+		"hull" 2800
 		"required crew" 6
 		"bunks" 13
 		"mass" 130
@@ -1920,7 +1920,7 @@ ship "Scout"
 		category "Transport"
 		"cost" 800000
 		"shields" 1200
-		"hull" 500
+		"hull" 1000
 		"required crew" 1
 		"bunks" 12
 		"mass" 110
@@ -1966,7 +1966,7 @@ ship "Jumper"
 		category "Transport"
 		"cost" 1250000
 		"shields" 2000
-		"hull" 600
+		"hull" 1200
 		"required crew" 1
 		"bunks" 12
 		"mass" 110
@@ -2012,7 +2012,7 @@ ship "Shuttle"
 		category "Transport"
 		"cost" 180000
 		"shields" 500
-		"hull" 600
+		"hull" 1200
 		"required crew" 1
 		"bunks" 6
 		"mass" 70
@@ -2053,7 +2053,7 @@ ship "Sparrow"
 		category "Interceptor"
 		"cost" 225000
 		"shields" 1200
-		"hull" 300
+		"hull" 600
 		"required crew" 1
 		"bunks" 2
 		"mass" 50
@@ -2097,7 +2097,7 @@ ship "Splinter"
 		category "Light Warship"
 		"cost" 3100000
 		"shields" 5200
-		"hull" 1700
+		"hull" 3400
 		"required crew" 12
 		"bunks" 21
 		"mass" 250
@@ -2147,7 +2147,7 @@ ship "Star Barge"
 		category "Light Freighter"
 		"cost" 210000
 		"shields" 600
-		"hull" 1000
+		"hull" 2000
 		"required crew" 1
 		"bunks" 3
 		"mass" 70
@@ -2188,7 +2188,7 @@ ship "Star Queen"
 		category "Transport"
 		"cost" 5500000
 		"shields" 4100
-		"hull" 2200
+		"hull" 4400
 		"required crew" 43
 		"bunks" 112
 		"mass" 230
@@ -2266,7 +2266,7 @@ ship "Wasp"
 		category "Interceptor"
 		"cost" 400000
 		"shields" 1500
-		"hull" 500
+		"hull" 1000
 		"required crew" 1
 		"bunks" 2
 		"mass" 60
