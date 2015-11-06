@@ -60,7 +60,7 @@ mission "Intro [0]"
 				accept
 	
 	on complete
-		payment 10000
+		payment 15000
 		conversation
 			`As you land on <planet>, James says, "Congrats on your first trip through hyperspace! I'm impressed that you didn't throw up; most folks do, the first time."`
 			`	"Including you?" you ask.`
@@ -290,7 +290,7 @@ mission "Intro [3 Freighter]
 				accept
 	
 	on complete
-		payment 30000
+		payment 50000
 		conversation "end of intro missions"
 
 
@@ -417,7 +417,7 @@ mission "Intro [3 Interceptor]
 				accept
 	
 	on complete
-		payment 30000
+		payment 50000
 		conversation "end of intro missions"
 
 
