@@ -141,7 +141,29 @@ ship "Scout" "Scout (Speedy)"
 		"A255 Atomic Steering"
 		"Hyperdrive"
 
+ship "Jumper" "Jumper (Basic)"
+	outfits
+		"Energy Blaster" 2
+		"Anti-Missile Turret"
+		"Dwarf Core"
+		"Supercapacitor"
+		"D23-QP Shield Generator"
+		"A250 Atomic Thruster"
+		"A255 Atomic Steering"
+		"Hyperdrive"
 
+ship "Jumper" "Jumper (Armed)"
+	outfits
+		"Heavy Laser" 2
+		"Anti-Missile Turret"
+		"Mass Expansion"
+		"Dwarf Core"
+		"LP036a Battery Pack"
+		"D41-HY Shield Generator"
+		"Water Coolant System"
+		"A250 Atomic Thruster"
+		"A255 Atomic Steering"
+		"Scram Drive"
 
 ship "Clipper" "Clipper (Heavy)"
 	outfits
@@ -155,8 +177,6 @@ ship "Clipper" "Clipper (Heavy)"
 		"Greyhound Plasma Thruster"
 		"Impala Plasma Steering"
 		"Scram Drive"
-
-
 
 ship "Clipper" "Clipper (Speedy)"
 	outfits
@@ -657,7 +677,6 @@ ship "Heavy Shuttle" "Heavy Shuttle (Armed)"
 		"Chipmunk Plasma Thruster"
 		"Chipmunk Plasma Steering"
 		"Hyperdrive"
-
 
 
 ship "Flivver" "Flivver (Racing)"

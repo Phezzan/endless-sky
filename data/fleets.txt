@@ -285,6 +285,12 @@ fleet "Large Core Merchants"
 		"Wasp (Proton)" 2
 	variant 2
 		"Arrow"
+	variant 2
+		"Scout (Speedy)"
+	variant 1
+		"Jumper (Basic)"
+	variant 1
+		"Jumper (Armed)"
 
 fleet "Small Northern Merchants"
 	government "Merchant"
@@ -443,6 +449,10 @@ fleet "Large Northern Merchants"
 		"Lance" 3
 	variant 2
 		"Arrow"
+	variant 2
+		"Scout (Speedy)"
+	variant 1
+		"Jumper (Basic)"
 	variant 1
 		"Star Queen"
 		"Leviathan"

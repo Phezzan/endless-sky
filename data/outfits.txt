@@ -10,10 +10,10 @@
 
 outfit "Cooling Ducts"
 	category "Systems"
-	cost 10000
+	cost 5000
 	thumbnail "outfit/cooling ducts"
-	"mass" 5
-	"outfit space" -5
+	"mass" 1
+	"outfit space" -4
 	"cooling" 5
 	description "When trying to cram as many high-powered outfits as possible into a ship, occasionally you reach the point where it is sporadically overheating and shutting down. In that case, you may need to install one of these."
 
@@ -21,8 +21,8 @@ outfit "Water Coolant System"
 	category "Systems"
 	cost 25000
 	thumbnail "outfit/water cooling"
-	"mass" 10
-	"outfit space" -10
+	"mass" 20
+	"outfit space" -3
 	"cooling" 12
 	description "This system is a step up from ordinary cooling ducts; it circulates water in between an external radiator and your ship's hottest internal components to keep them from overheating."
 
@@ -31,7 +31,7 @@ outfit "Liquid Nitrogen Cooler"
 	cost 60000
 	thumbnail "outfit/liquid nitrogen"
 	"mass" 20
-	"outfit space" -20
+	"outfit space" -10
 	"cooling" 29
 	description "For ships with extreme cooling needs, liquid nitrogen is the answer. One of these coolers will dissipate the heat produced by anything but the heaviest of armaments."
 
@@ -39,8 +39,8 @@ outfit "Liquid Helium Cooler"
 	category "Systems"
 	cost 150000
 	thumbnail "outfit/liquid helium"
-	"mass" 40
-	"outfit space" -40
+	"mass" 20
+	"outfit space" -20
 	"cooling" 69
 	description "Liquid helium is the ultimate in cooling technology. Given how much space this cooling system takes up, you may be better off just installing more efficient, low-heat components instead, but where that is not an option, this cooler can handle almost anything you throw at it."
 
@@ -49,8 +49,8 @@ outfit "D14-RN Shield Generator"
 	category "Systems"
 	cost 20000
 	thumbnail "outfit/tiny shield"
-	"mass" 15
-	"outfit space" -15
+	"mass" 10
+	"outfit space" -10
 	"shield generation" .2
 	description "This is the standard shield generator for fighters and interceptors, as well as for many non-combat starships. Although it is possible for a ship to have no shield generator at all, recharging its shield matrix only when landed in a hospitable spaceport, life in deep space is unpredictable enough that most pilots find shield generators to be well worth the space they take up."
 
@@ -58,8 +58,8 @@ outfit "D23-QP Shield Generator"
 	category "Systems"
 	cost 35000
 	thumbnail "outfit/small shield"
-	"mass" 22
-	"outfit space" -22
+	"mass" 17
+	"outfit space" -17
 	"shield generation" .32
 	description "This is a slightly more powerful shield generator than the standard model installed in most small ships. If combat lasts long enough, the increased recharge rate is enough to give you an edge, but recharging your shields completely will still take a long time."
 
@@ -67,8 +67,8 @@ outfit "D41-HY Shield Generator"
 	category "Systems"
 	cost 65000
 	thumbnail "outfit/medium shield"
-	"mass" 30
-	"outfit space" -30
+	"mass" 25
+	"outfit space" -25
 	"shield generation" .51
 	description "This is a more powerful shield generator designed for ships that are likely to see frequent combat, or that have such a large shield capacity that recharging them would take a long time with a smaller generator."
 
@@ -76,8 +76,8 @@ outfit "D67-TM Shield Generator"
 	category "Systems"
 	cost 120000
 	thumbnail "outfit/large shield"
-	"mass" 45
-	"outfit space" -45
+	"mass" 35
+	"outfit space" -35
 	"shield generation" .82
 	description "This shield generator is powerful enough that in combat against some particularly weak ships, they may not even be capable of depleting your shields as fast as they recharge."
 
@@ -85,10 +85,19 @@ outfit "D94-YV Shield Generator"
 	category "Systems"
 	cost 200000
 	thumbnail "outfit/huge shield"
+	"mass" 50
+	"outfit space" -50
+	"shield generation" 1.31
+	description "Warships use the D94-YV generator to outlast their opponents, but you can fit one in a smaller ship if you are willing to sacrifice engine power or weaponry to make space for it."
+
+outfit "D9999 Shield Generator"
+	category "Systems"
+	cost 250000
+	thumbnail "outfit/huge shield"
 	"mass" 60
 	"outfit space" -60
-	"shield generation" 1.31
-	description "This is the most powerful shield generator available in human space. Because of their large size, D94-YV shield generators are mostly used in large warships, but you can fit one in a smaller ship if you are willing to sacrifice engine power or weaponry to make space for it."
+	"shield generation" 1.5
+	description "This is the most powerful shield generator available in human	space. Because of their large size, D9000 shield generators are mostly used in large warships to outlast any tactical disadvantage an enemy might spring."
 
 outfit "S-270 Regenerator"
 	category "Systems"
@@ -115,20 +124,29 @@ outfit "S-970 Regenerator"
 
 outfit "Ramscoop"
 	category "Systems"
-	cost 60000
+	cost 50000
 	thumbnail "outfit/ramscoop"
-	"mass" 10
-	"outfit space" -10
-	"ramscoop" 1
+	"mass" 3
+	"outfit space" -6
+	"ramscoop" 2
 	description "In the early days of space exploration, when ships could travel through half a dozen systems before encountering an established colony where they could refuel, ramscoops were an essential piece of equipment, harvesting plasma from the solar wind to refill your hyperspace fuel tanks. Although you can install more than one ramscoop, additional ramscoops on a single ship are not as effective as the first."
+
+outfit "Ramscoop Adv"
+	category "Systems"
+	cost 200000
+	thumbnail "outfit/catalytic ramscoop"
+	"mass" 6
+	"outfit space" -10
+	"ramscoop" 4
+	description "An advanced Ramscoop designed for long range military scout vessels. With double the plasma concentration, it allows missions well beyond colonized space.
 
 outfit "Catalytic Ramscoop"
 	category "Systems"
 	cost 320000
 	thumbnail "outfit/catalytic ramscoop"
-	"mass" 16
-	"outfit space" -16
-	"ramscoop" 7
+	"mass" 9
+	"outfit space" -14
+	"ramscoop" 6
 	description "Ramscoop technology has been almost unchanged for centuries, because with nearly every system in human space settled there has not been a pressing need for ships to generate their own fuel. But with the Free Worlds war making travel once again more difficult, some engineers in the Deep recently invented a much-improved ramscoop for use in their merchant fleets."
 
 outfit "Hyperdrive"
@@ -144,13 +162,23 @@ outfit "Hyperdrive"
 
 outfit "Scram Drive"
 	category "Systems"
-	cost 90000
+	cost 100000
 	thumbnail "outfit/hyperdrive"
-	"mass" 30
-	"outfit space" -30
+	"mass" 25
+	"outfit space" -25
 	"scram drive" .2
 	"hyperdrive" 1
 	description "A Scram Drive is a specially designed hyperdrive that works even if your ship is traveling at a much higher speed, at the expense of using more fuel. If you are being pursued by pirates (or just want to get somewhere in a hurry) that extra bit of speed can make a big difference."
+
+outfit "Warp Drive"
+	category "Systems"
+	cost 1000000
+	thumbnail "outfit/hyperdrive"
+	"mass" 30
+	"outfit space" -30
+	"jump speed" .75
+	"hyperdrive" 1
+	description "A Warp Drive is a new flexible FTL drive. Good Luck"
 
 
 outfit "Cargo Scanner"
@@ -200,7 +228,7 @@ outfit "Mass Expansion"
 	thumbnail "outfit/blue screwdriver"
 	"mass" 5
 	"outfit space" 15
-	"cargo space" -20
+	"cargo space" -15
 	description "A mass expansion allows you to sacrifice some cargo space in order to make room for more outfits, in situations where you need just a bit more space to install a particular system. It does not increase your weapon or engine space unfortunately."
 	
 outfit "Cargo Expansion"
@@ -209,33 +237,33 @@ outfit "Cargo Expansion"
 	thumbnail "outfit/red screwdriver"
 	"mass" 5
 	"cargo space" 15
-	"outfit space" -20
+	"outfit space" -15
 	description "If being able to carry more cargo is more important to you than having advanced weapons or other systems, a cargo expansion will significantly increase the size of your cargo hold."
 	
 outfit "Bunk Room"
 	category "Systems"
 	cost 40000
 	thumbnail "outfit/bunk room"
-	"mass" 5
-	"bunks" 4
-	"outfit space" -20
+	"mass" 2
+	"bunks" 5
+	"outfit space" -15
 	description "If you really want to make space for a few more passengers (or crew members, if you're trying to capture other ships), you can expand the living space of your ship into the area usually reserved for outfits."
 	
 outfit "Small Bunk Room"
 	category "Systems"
 	cost 20000
 	thumbnail "outfit/small bunk room"
-	"mass" 3
+	"mass" 1
 	"bunks" 2
-	"outfit space" -12
+	"outfit space" -6
 	description "Captains who do not care particularly much about the comfort of their passengers or crew can usually find a way to shove a bunk bed in behind the power generator or to hang a few hammocks from the engines as a makeshift way to make space for more people."
 
 outfit "Fuel Pod"
 	category "Systems"
 	cost 20000
 	thumbnail "outfit/fuel pod"
-	"mass" 8
-	"outfit space" -8
+	"mass" 6
+	"outfit space" -5
 	"fuel capacity" 100
 	description "A fuel pod increases your fuel capacity, allowing your ship to make one additional hyperspace jump before it needs to land and refuel."
 
@@ -244,14 +272,13 @@ outfit "Interference Plating"
 	cost 50000
 	thumbnail "outfit/interference plating"
 	"mass" 4
-	"outfit space" -4
 	"scan interference" .5
 	description "If you're in the habit of carrying illegal cargo or outfits, this plating increases the odds that a scan of your ship will fail to detect it. The more of these you install, the better your chances of evading detection. They won't keep anyone from noticing if you're flying an unlicensed ship, however."
 
 
 outfit "Laser Rifle"
 	category "Hand to Hand"
-	cost 8000
+	cost 7500
 	thumbnail "outfit/laser rifle"
 	"capture attack" .6
 	"capture defense" .8
@@ -288,8 +315,8 @@ outfit "Local Map"
 	category "Special"
 	cost 1000
 	thumbnail "outfit/map"
-	"map" 12
-	description "This data chip contains complete information on the twelve star systems closest to this one: planets, ports, governments, trade prices, available services, etc. You can get all the same information just by exploring those systems yourself, but having a map can save you from making wrong turns if you are trying to travel through new territory to reach a certain system quickly."
+	"map" 13
+	description "This data chip contains complete information on the thirteen star systems closest to this one: planets, ports, governments, trade prices, available services, etc. You can get all the same information just by exploring those systems yourself, but having a map can save you from making wrong turns if you are trying to travel through new territory to reach a certain system quickly."
 
 
 outfit "Pilot's License"

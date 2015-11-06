@@ -67,14 +67,14 @@ ship "Argosy"
 		"cost" 1560000
 		"shields" 4200
 		"hull" 2600
-		"required crew" 4
+		"required crew" 2
 		"bunks" 14
-		"mass" 330
-		"drag" 5.9
+		"mass" 275
+		"drag" 5.7
 		"heat dissipation" .7
-		"fuel capacity" 400
-		"cargo space" 120
-		"outfit space" 270
+		"fuel capacity" 500
+		"cargo space" 130
+		"outfit space" 280
 		"weapon capacity" 90
 		"engine capacity" 80
 		weapon
@@ -121,12 +121,12 @@ ship "Arrow"
 		"shields" 2000
 		"hull" 400
 		"required crew" 1
-		"bunks" 5
-		"mass" 130
+		"bunks" 6
+		"mass" 125
 		"drag" 2.7
 		"heat dissipation" .85
-		"fuel capacity" 400
-		"cargo space" 10
+		"fuel capacity" 500
+		"cargo space" 15
 		"outfit space" 180
 		"weapon capacity" 50
 		"engine capacity" 60
@@ -335,15 +335,15 @@ ship "Berserker"
 		category "Interceptor"
 		"cost" 520000
 		"shields" 2200
-		"hull" 500
+		"hull" 600
 		"required crew" 1
-		"bunks" 2
+		"bunks" 3
 		"mass" 110
 		"drag" 2.2
 		"heat dissipation" .85
 		"fuel capacity" 400
-		"cargo space" 10
-		"outfit space" 200
+		"cargo space" 15
+		"outfit space" 205
 		"weapon capacity" 35
 		"engine capacity" 65
 		weapon
@@ -381,13 +381,13 @@ ship "Blackbird"
 		"cost" 2230000
 		"shields" 4400
 		"hull" 900
-		"required crew" 3
+		"required crew" 2
 		"bunks" 28
 		"mass" 220
 		"drag" 5.0
 		"heat dissipation" .7
 		"fuel capacity" 700
-		"cargo space" 60
+		"cargo space" 75
 		"outfit space" 350
 		"weapon capacity" 90
 		"engine capacity" 110
@@ -426,13 +426,13 @@ ship "Bounder"
 		"cost" 1140000
 		"shields" 2200
 		"hull" 700
-		"required crew" 1
+		"required crew" 2
 		"bunks" 17
 		"mass" 130
 		"drag" 3.7
 		"heat dissipation" .8
 		"fuel capacity" 900
-		"cargo space" 40
+		"cargo space" 50
 		"outfit space" 220
 		"weapon capacity" 50
 		"engine capacity" 110
@@ -597,13 +597,13 @@ ship "Clipper"
 		"cost" 900000
 		"shields" 2700
 		"hull" 800
-		"required crew" 3
+		"required crew" 1
 		"bunks" 9
 		"mass" 150
 		"drag" 3.7
 		"heat dissipation" .8
 		"fuel capacity" 500
-		"cargo space" 70
+		"cargo space" 90
 		"outfit space" 260
 		"weapon capacity" 60
 		"engine capacity" 80
@@ -995,12 +995,12 @@ ship "Flivver"
 		"shields" 1400
 		"hull" 200
 		"required crew" 1
-		"bunks" 3
+		"bunks" 4
 		"mass" 40
 		"drag" 1.0
 		"heat dissipation" .9
-		"fuel capacity" 500
-		"cargo space" 5
+		"fuel capacity" 600
+		"cargo space" 8
 		"outfit space" 130
 		"weapon capacity" 25
 		"engine capacity" 45
@@ -1044,7 +1044,7 @@ ship "Freighter"
 		"drag" 5.6
 		"heat dissipation" .6
 		"fuel capacity" 600
-		"cargo space" 150
+		"cargo space" 160
 		"outfit space" 250
 		"weapon capacity" 80
 		"engine capacity" 70
@@ -1241,7 +1241,7 @@ ship "Hauler"
 		"drag" 10.5
 		"heat dissipation" .6
 		"fuel capacity" 400
-		"cargo space" 130
+		"cargo space" 140
 		"outfit space" 350
 		"weapon capacity" 140
 		"engine capacity" 80
@@ -1391,14 +1391,14 @@ ship "Hawk"
 		"cost" 670000
 		"shields" 2500
 		"hull" 500
-		"required crew" 2
+		"required crew" 1
 		"bunks" 4
-		"mass" 150
+		"mass" 133
 		"drag" 2.1
 		"heat dissipation" .8
-		"fuel capacity" 300
-		"cargo space" 30
-		"outfit space" 200
+		"fuel capacity" 350
+		"cargo space" 35
+		"outfit space" 210
 		"weapon capacity" 40
 		"engine capacity" 70
 		weapon
@@ -1435,13 +1435,13 @@ ship "Heavy Shuttle"
 		"shields" 700
 		"hull" 700
 		"required crew" 1
-		"bunks" 8
-		"mass" 110
+		"bunks" 9
+		"mass" 100
 		"drag" 2.1
 		"heat dissipation" .8
 		"fuel capacity" 500
-		"cargo space" 35
-		"outfit space" 120
+		"cargo space" 40
+		"outfit space" 125
 		"weapon capacity" 10
 		"engine capacity" 60
 		weapon
@@ -1918,17 +1918,17 @@ ship "Scout"
 	sprite "ship/scout"
 	attributes
 		category "Transport"
-		"cost" 850000
+		"cost" 800000
 		"shields" 1200
-		"hull" 400
-		"required crew" 2
+		"hull" 500
+		"required crew" 1
 		"bunks" 12
 		"mass" 110
 		"drag" 3.4
 		"heat dissipation" .7
 		"fuel capacity" 800
-		"cargo space" 55
-		"outfit space" 220
+		"cargo space" 70
+		"outfit space" 225
 		"weapon capacity" 40
 		"engine capacity" 100
 		weapon
@@ -1960,6 +1960,51 @@ ship "Scout"
 	description "The Lionheart Scoutship was designed back in the days when the galaxy was more sparsely populated, and ships prospecting for habitable worlds or worlds rich in resources would often travel far away from any habitable ports where they would be able to refuel. Although the galaxy has now been much more thoroughly explored, the Scout remains a popular ship for long-distance travel."
 
 
+ship "Jumper"
+	sprite "ship/scout"
+	attributes
+		category "Transport"
+		"cost" 1250000
+		"shields" 2000
+		"hull" 600
+		"required crew" 1
+		"bunks" 12
+		"mass" 110
+		"drag" 2.0
+		"heat dissipation" .83
+		"fuel capacity" 600
+		"cargo space" 70
+		"outfit space" 250
+		"weapon capacity" 60
+		"engine capacity" 120
+		weapon
+			"blast radius" 16
+			"shield damage" 160
+			"hull damage" 100
+			"hit force" 240
+	outfits
+		"Energy Blaster" 2
+		"Anti-Missile Turret"
+		"Dwarf Core"
+		"LP036a Battery Pack"
+		"D23-QP Shield Generator"
+		"Ramscoop Adv"
+		
+		"A250 Atomic Thruster"
+		"A255 Atomic Steering"
+		"Scram Drive"
+		
+	engine -8 46
+	engine 8 46
+	gun -20 -7 "Energy Blaster"
+	gun 20 -7 "Energy Blaster"
+	turret 0 -7 "Anti-Missile Turret"
+	explode "tiny explosion" 10
+	explode "small explosion" 20
+	explode "medium explosion" 15
+	description "An overhaul to the Lionheart Scoutship, the Jumper exchanges fuel capacity for combat readiness."
+	description "A complete redesign using advanced materials, this is one of the most versatile transports."
+
 
 ship "Shuttle"
 	sprite "ship/shuttle"
@@ -1974,7 +2019,7 @@ ship "Shuttle"
 		"drag" 1.7
 		"heat dissipation" .7
 		"fuel capacity" 400
-		"cargo space" 20
+		"cargo space" 24
 		"outfit space" 120
 		"weapon capacity" 10
 		"engine capacity" 60
@@ -2109,7 +2154,7 @@ ship "Star Barge"
 		"drag" 2.4
 		"heat dissipation" .7
 		"fuel capacity" 300
-		"cargo space" 50
+		"cargo space" 60
 		"outfit space" 130
 		"weapon capacity" 20
 		"engine capacity" 40

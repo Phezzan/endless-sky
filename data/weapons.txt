@@ -163,7 +163,7 @@ outfit "Heavy Laser"
 		"reload" 1
 		"firing energy" 1
 		"firing heat" 2.2
-		"shield damage" 1.8
+		"shield damage" 1.9
 		"hull damage" 3.7
 	description "The Heavy Laser is an upgraded Beam Laser with a significantly longer range and higher power. It is mostly intended for larger ships, where energy and space are plentiful, but some pilots consider a single Heavy Laser to be a worthwhile alternative to a pair of Beam Lasers, because the longer range makes up for the fact that it does not quite deal twice as much damage."
 
@@ -284,9 +284,9 @@ outfit "Heavy Anti-Missile Turret"
 	category "Turrets"
 	cost 150000
 	thumbnail "outfit/heavy anti-missile"
-	"mass" 30
-	"outfit space" -30
-	"weapon capacity" -30
+	"mass" 25
+	"outfit space" -28
+	"weapon capacity" -28
 	"turret mounts" -1
 	weapon
 		"hit effect" "large anti-missile"
