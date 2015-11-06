@@ -17,8 +17,6 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 using namespace std;
 
-
-
 const string DataWriter::space = " ";
 
 
@@ -40,39 +38,60 @@ DataWriter::~DataWriter()
 
 void DataWriter::Write(const DataNode &node)
 {
-	for(int i = 0; i < node.Size(); ++i)
-		WriteToken(node.Token(i).c_str());
-	Write();
-	
-	if(node.begin() != node.end())
-	{
-		BeginChild();
-		{
-			for(const DataNode &child : node)
-				Write(child);
-		}
-		EndChild();
-	}
+	lock_guard<mutex> lock(writeMutex);
+	WriteLock(node);
 }
 
 
+void DataWriter::WriteLock(const DataNode &node)
+{
+	for(int i = 0; i < node.Size(); ++i)
+		WriteToken(node.Token(i).c_str());
+	WriteLock();
+	
+	if(node.begin() != node.end())
+	{
+		BeginChildLock();
+		{
+			for(const DataNode &child : node)
+				WriteLock(child);
+		}
+		EndChildLock();
+	}
+}
 
 void DataWriter::Write()
+{
+	lock_guard<mutex> lock(writeMutex);
+	out << '\n';
+	before = &indent;
+}
+
+void DataWriter::WriteLock()
 {
 	out << '\n';
 	before = &indent;
 }
 
 
-
 void DataWriter::BeginChild()
+{
+	lock_guard<mutex> lock(writeMutex);
+	indent += '\t';
+}
+
+void DataWriter::EndChild()
+{
+	lock_guard<mutex> lock(writeMutex);
+	indent.erase(indent.length() - 1);
+}
+
+void DataWriter::BeginChildLock()
 {
 	indent += '\t';
 }
 
-
-
-void DataWriter::EndChild()
+void DataWriter::EndChildLock()
 {
 	indent.erase(indent.length() - 1);
 }
@@ -81,6 +100,7 @@ void DataWriter::EndChild()
 
 void DataWriter::WriteComment(const string &str)
 {
+	lock_guard<mutex> lock(writeMutex);
 	out << indent << "# " << str << '\n';
 }
 
@@ -90,6 +110,7 @@ void DataWriter::WriteToken(const char *a)
 {
 	bool hasSpace = !*a;
 	bool hasQuote = false;
+
 	for(const char *it = a; *it; ++it)
 	{
 		hasSpace |= (*it <= ' ');

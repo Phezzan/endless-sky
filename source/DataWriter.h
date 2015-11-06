@@ -15,9 +15,11 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 #include <string>
 #include <sstream>
+#include <mutex>
 
 class DataNode;
 
+using namespace std;
 
 
 // This class writes data in a hierarchical format, where an indented line is
@@ -27,13 +29,13 @@ class DataNode;
 // automatically adds quotation marks around strings if they contain whitespace.
 class DataWriter {
 public:
-	DataWriter(const std::string &path);
+	DataWriter(const string &path);
 	~DataWriter();
 	
   template <class ...B>
 	void Write(const char *a, B... others);
   template <class ...B>
-	void Write(const std::string &a, B... others);
+	void Write(const string &a, B... others);
   template <class A, class ...B>
 	void Write(const A &a, B... others);
 	void Write(const DataNode &node);
@@ -42,19 +44,31 @@ public:
 	void BeginChild();
 	void EndChild();
 	
-	void WriteComment(const std::string &str);
+	void WriteComment(const string &str);
 	
 	
 private:
 	void WriteToken(const char *a);
 	
-	
+	template <class ...B>
+		void WriteLock(const char *a, B... others);
+	template <class ...B>
+		void WriteLock(const string &a, B... others);
+	template <class A, class ...B>
+		void WriteLock(const A &a, B... others);
+	void WriteLock(const DataNode &node);
+	void WriteLock();
+	void BeginChildLock();
+	void EndChildLock();
+
 private:
-	std::string path;
-	std::string indent;
-	static const std::string space;
-	const std::string *before;
-	std::ostringstream out;
+
+	string path;
+	string indent;
+	static const string space;
+	const string *before;
+	ostringstream out;
+	mutex writeMutex;
 };
 
 
@@ -62,16 +76,18 @@ private:
 template <class ...B>
 void DataWriter::Write(const char *a, B... others)
 {
+	lock_guard<mutex> lock(writeMutex);
 	WriteToken(a);
-	Write(others...);
+	WriteLock(others...);
 }
 
 
 
 template <class ...B>
-void DataWriter::Write(const std::string &a, B... others)
+void DataWriter::Write(const string &a, B... others)
 {
-	Write(a.c_str(), others...);
+	lock_guard<mutex> lock(writeMutex);
+	WriteLock(a.c_str(), others...);
 }
 
 
@@ -79,15 +95,45 @@ void DataWriter::Write(const std::string &a, B... others)
 template <class A, class ...B>
 void DataWriter::Write(const A &a, B... others)
 {
-	static_assert(std::is_arithmetic<A>::value,
+	static_assert(is_arithmetic<A>::value,
+		"DataWriter cannot output anything but strings and arithmetic types.");
+
+	lock_guard<mutex> lock(writeMutex);
+	out << *before << a;
+	before = &space;
+
+	WriteLock(others...);
+}
+
+
+template <class ...B>
+void DataWriter::WriteLock(const char *a, B... others)
+{
+	WriteToken(a);
+	WriteLock(others...);
+}
+
+
+
+template <class ...B>
+void DataWriter::WriteLock(const string &a, B... others)
+{
+	WriteLock(a.c_str(), others...);
+}
+
+
+
+template <class A, class ...B>
+void DataWriter::WriteLock(const A &a, B... others)
+{
+	static_assert(is_arithmetic<A>::value,
 		"DataWriter cannot output anything but strings and arithmetic types.");
 	
 	out << *before << a;
 	before = &space;
 	
-	Write(others...);
+	WriteLock(others...);
 }
-
 
 
 #endif
