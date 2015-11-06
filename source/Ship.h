@@ -356,8 +356,7 @@ private:
 	double ionization = 0.;
 	
 	int crew = 0;
-	int pilotError = 0;
-	int pilotOkay = 0;
+	int pilotCheck = 0;
 	
 	// Current status of this particular ship:
 	const System *currentSystem = nullptr;
