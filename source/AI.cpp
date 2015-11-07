@@ -851,7 +851,7 @@ void AI::PrepareForHyperspace(Ship &ship, Command &command)
 		return;
 	
 	Point direction = ship.GetTargetSystem()->Position() - ship.GetSystem()->Position();
-	if(type == 150)
+	if(type == Ship::SCRAMDRIVE)
 	{
 		direction = direction.Unit();
 		Point normal(-direction.Y(), direction.X());
@@ -885,7 +885,7 @@ void AI::PrepareForHyperspace(Ship &ship, Command &command)
 	// If we are moving too fast, point in the right direction.
 	else if(Stop(ship, command, ship.Attributes().Get("jump speed")))
 	{
-		if(type != 200)
+		if(type != Ship::JUMPDRIVE)
 			command.SetTurn(TurnToward(ship, direction));
 	}
 }

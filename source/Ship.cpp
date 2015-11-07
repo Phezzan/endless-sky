@@ -585,23 +585,16 @@ bool Ship::Move(list<Effect> &effects)
 	else if(heat < Mass() * 90.)
 		isOverheated = false;
 	
+	double mass = Mass();
 	double maxShields = attributes.Get("shields");
 	shields = min(shields, maxShields);
 	double maxHull = attributes.Get("hull");
 	hull = min(hull, maxHull);
-	isDisabled = isOverheated || IsDisabled();
-	
+	isDisabled = isOverheated || isDisabled;
+
 	// Update ship supply levels.
 	if(!isDisabled)
 	{
-		// If you have a ramscoop, you recharge enough fuel to make one jump in
-		// a little less than a minute - enough to be an inconvenience without
-		// being totally aggravating.
-       
-        double ramscoop = attributes.Get("ramscoop");
-		if(ramscoop > 0.)
-			TransferFuel(sqrt(ramscoop) * -(0.01 + .001 * sqrt(velocity.Length())), nullptr);
-		
 		energy += attributes.Get("energy generation") - ionization;
 		energy = max(0., energy);
 		heat += attributes.Get("heat generation");
@@ -617,7 +610,7 @@ bool Ship::Move(list<Effect> &effects)
 		// Recharge shields, but only up to the max. If there is extra shield
 		// energy, use it to recharge fighters and drones.
 		shields += attributes.Get("shield generation");
-		static const double SHIELD_EXCHANGE_RATE = 1.;
+		static const double SHIELD_EXCHANGE_RATE = 0.86;
 		energy -= SHIELD_EXCHANGE_RATE * attributes.Get("shield generation");
 		double excessShields = max(0., shields - maxShields);
 		shields -= excessShields;
@@ -703,15 +696,18 @@ bool Ship::Move(list<Effect> &effects)
 	}
 	else if(hyperspaceSystem || hyperspaceCount)
 	{
-		fuel -= (hyperspaceSystem != nullptr);
+		static const int HYPER_C = 100;
+
+		int direction = -1;
+		if (hyperspaceSystem)
+		{
+			fuel -= JumpFuel() / static_cast<double>(HYPER_C); //jump cost / 100
+			direction = 1;
+		}
 		
 		// Enter hyperspace.
-		int direction = (hyperspaceSystem != nullptr) - (hyperspaceSystem == nullptr);
 		hyperspaceCount += direction;
-		static const int HYPER_C = 100;
-		static const double HYPER_A = 2.;
-		static const double HYPER_D = 1000.;
-		bool hasJumpDrive = (hyperspaceType == 200);
+		bool const hasJumpDrive = (hyperspaceType == JUMPDRIVE);
 		
 		// Create the particle effects for the jump drive. This may create 100
 		// or more particles per ship per turn at the peak of the jump.
@@ -734,11 +730,11 @@ bool Ship::Move(list<Effect> &effects)
 			}
 		}
 		
+		static const double HYPER_A = 2.;
+		static const double HYPER_D = 1000.;
 		if(hyperspaceCount == HYPER_C)
 		{
 			currentSystem = hyperspaceSystem;
-			// If the jump fuel is higher than 100, expend extra fuel now.
-			fuel -= hyperspaceType - HYPER_C;
 			hyperspaceSystem = nullptr;
 			SetTargetSystem(nullptr);
 			SetTargetPlanet(nullptr);
@@ -861,6 +857,37 @@ bool Ship::Move(list<Effect> &effects)
 		
 		return true;
 	}
+	else 
+	{
+		// If you have a ramscoop, you recharge enough fuel to make one jump in
+		// a little less than a minute - enough to be an inconvenience without
+		// being totally aggravating.
+		double ramscoop = attributes.Get("ramscoop");
+		if(ramscoop > 0.)
+			TransferFuel(sqrt(ramscoop) * -(0.028 + .002 * pow(velocity.LengthSquared(), 0.34)), nullptr);
+
+		double cloakingSpeed = attributes.Get("cloak");
+		if(commands.Has(Command::CLOAK) && cloakingSpeed && !isDisabled && !hyperspaceCount 
+			&& zoom == 1.)
+		{
+			double cloakFuel  = attributes.Get("cloaking fuel");
+			double cloakEnergy= attributes.Get("cloaking energy");
+
+			if (fuel > (cloakFuel + (ramscoop < 1.) * 100) &&
+				energy > (cloakEnergy = pow((velocity.LengthSquared()+1.) * mass, 0.165) * cloakEnergy)
+			   )
+			{
+				fuel -= cloakFuel;
+				energy -= cloakEnergy;
+				cloak = min(1., cloak + cloakingSpeed);
+			}
+		}
+		else if(cloakingSpeed)
+			cloak = max(0., cloak - cloakingSpeed);
+		else
+			cloak = 0.;
+	}
+
 	if(commands.Has(Command::LAND) && CanLand())
 		landingPlanet = GetTargetPlanet()->GetPlanet();
 	else if(commands.Has(Command::JUMP))
@@ -870,20 +897,6 @@ bool Ship::Move(list<Effect> &effects)
 			hyperspaceSystem = GetTargetSystem();
 	}
 	
-	double cloakingSpeed = attributes.Get("cloak");
-	bool canCloak = (zoom == 1. && !isDisabled && !hyperspaceCount && cloakingSpeed
-		&& fuel >= attributes.Get("cloaking fuel")
-		&& energy >= attributes.Get("cloaking energy"));
-	if(commands.Has(Command::CLOAK) && canCloak)
-	{
-		cloak = min(1., cloak + cloakingSpeed);
-		fuel -= attributes.Get("cloaking fuel");
-		energy -= attributes.Get("cloaking energy");
-	}
-	else if(cloakingSpeed)
-		cloak = max(0., cloak - cloakingSpeed);
-	else
-		cloak = 0.;
 	
 	int requiredCrew = RequiredCrew();
 	int crew		 = Crew();
@@ -896,23 +909,26 @@ bool Ship::Move(list<Effect> &effects)
 		int const rndCrew = (requiredCrew<1) ? 0: static_cast<int>(Random::Int(requiredCrew));
 		if(rndCrew > crew)
 		{
-            pilotCheck = -10 * requiredCrew + 5 * crew;
-            if (this->GetGovernment()->IsPlayer())
-                Messages::Add("Your ship is moving erratically because you do not have enough crew to pilot it.");
+			pilotCheck = -10 * requiredCrew + 5 * crew;
+			if (this->GetGovernment()->IsPlayer())
+				Messages::Add("Your ship is moving erratically because you do not have enough crew to pilot it.");
 		}
 		else 
 		{
-            pilotCheck = 30 + rndCrew;
+			pilotCheck = 30 + rndCrew;
 
 			// allow crew to repair the hull... slowly
 			if(hull > 0. && hull < maxHull && crew > rndCrew)
+			{
 				hull += (crew - rndCrew);
+				if(isDisabled && Random::Int(static_cast<int>(hull)) >= static_cast<unsigned>(MinimumHull()))
+					UpdateDisabled();
+			}
 		}
 	}
 	
 	// This ship is not landing or entering hyperspace. So, move it. If it is
 	// disabled, all it can do is slow down to a stop.
-	double mass = Mass();
 	if(isDisabled)
 		velocity *= 1. - attributes.Get("drag") / mass;
 	else if(pilotCheck > 0)
@@ -1248,9 +1264,13 @@ bool Ship::IsOverheated() const
 
 bool Ship::IsDisabled() const
 {
-	double minimumHull = MinimumHull();
-	bool needsCrew = RequiredCrew() != 0;
-	return (hull < minimumHull || (!crew && needsCrew));
+	return isDisabled;
+}
+
+bool Ship::UpdateDisabled() 
+{
+	isDisabled = (hull < MinimumHull() || (crew < 1 && RequiredCrew() > 0));
+    return isDisabled;
 }
 
 
@@ -1316,20 +1336,21 @@ int Ship::CheckHyperspace() const
 	
 	// Find out where we're going and how we're getting there,
 	const System *destination = GetTargetSystem();
-	int type = HyperspaceType();
+	unsigned type = HyperspaceType();
 	
 	// You can't jump to a system with no link to it.
 	if(!type)
 		return 0;
 	
-	if(fuel < type)
+	double cost = JumpFuel();
+	if(fuel < cost)
 		return 0;
 	
 	Point direction = destination->Position() - currentSystem->Position();
 	
 	// The ship can only enter hyperspace if it is traveling slowly enough
 	// and pointed in the right direction.
-	if(type == 150)
+	if(type == SCRAMDRIVE)
 	{
 		double deviation = fabs(direction.Unit().Cross(velocity));
 		if(deviation > attributes.Get("scram drive"))
@@ -1338,7 +1359,7 @@ int Ship::CheckHyperspace() const
 	else if(velocity.Length() > attributes.Get("jump speed"))
 		return 0;
 	
-	if(type != 200)
+	if(type != JUMPDRIVE)
 	{
 		// Figure out if we're within one turn step of facing this system.
 		bool left = direction.Cross(angle.Unit()) < 0.;
@@ -1355,8 +1376,8 @@ int Ship::CheckHyperspace() const
 
 
 // Check what type of hyperspce jump this ship is making (0 = not allowed,
-// 100 = hyperdrive, 150 = scram drive, 200 = jump drive).
-int Ship::HyperspaceType() const
+// 1 = hyperdrive, 2 = scram drive, 3 = jump drive).
+unsigned Ship::HyperspaceType() const
 {
 	if(IsDisabled())
 		return 0;
@@ -1369,17 +1390,15 @@ int Ship::HyperspaceType() const
 	bool hasScramDrive = attributes.Get("scram drive");
 	bool hasJumpDrive = attributes.Get("jump drive");
 	
-	// Figure out what sort of jump we're making. 100 = normal hyperspace,
-	// 150 = scram drive, 200 = jump drive.
 	if(hasHyperdrive || hasScramDrive)
 		for(const System *link : currentSystem->Links())
 			if(link == destination)
-				return hasScramDrive ? 150 : 100;
+				return hasScramDrive ? 2 : 1;
 	
 	if(hasJumpDrive)
 		for(const System *link : currentSystem->Neighbors())
 			if(link == destination)
-				return 200;
+				return 3;
 	
 	return 0;
 }
@@ -1473,6 +1492,7 @@ void Ship::Recharge(bool atSpaceport)
 		shields = attributes.Get("shields");
 		hull = attributes.Get("hull");
 		energy = attributes.Get("energy capacity");
+		isDisabled = false;
 	}
 	heat = max(0., attributes.Get("heat generation") - attributes.Get("cooling")) / (1. - heatDissipation);
 	ionization = 0.;
@@ -1583,10 +1603,18 @@ int Ship::JumpsRemaining() const
 
 double Ship::JumpFuel() const
 {
-	int type = HyperspaceType();
-	if(type)
-		return type;
-	return attributes.Get("jump drive") ? 200. : attributes.Get("scram drive") ? 150. : 100.;
+	unsigned type = HyperspaceType();
+
+	if (type)
+	{
+		static double const cost[] = { NO_HYPERSPACE, HYPERDRIVE_FUEL, SCRAMDRIVE_FUEL, JUMPDRIVE_FUEL };
+		return cost[type];
+	}
+
+	return 
+		attributes.Get("jump drive") ? JUMPDRIVE_FUEL : 
+		attributes.Get("scram drive") ? SCRAMDRIVE_FUEL : 
+		HYPERDRIVE_FUEL;
 }
 
 
@@ -1610,6 +1638,7 @@ int Ship::RequiredCrew() const
 void Ship::AddCrew(int count)
 {
 	crew += count;
+    UpdateDisabled();
 }
 
 
@@ -1683,6 +1712,7 @@ int Ship::TakeDamage(const Projectile &projectile, bool isBlast)
 		hull -= hullDamage;
 		heat += heatDamage;
 		ionization += ionDamage;
+        UpdateDisabled();
 	}
 	
 	if(hitForce && !IsHyperspacing())
@@ -2109,7 +2139,7 @@ double Ship::MinimumHull() const
 		return 0.;
 	
 	double maximumHull = attributes.Get("hull");
-	return max(.20 * maximumHull, min(.50 * maximumHull, 400.));
+	return max(.125 * maximumHull, min(.50 * maximumHull, 999.));
 }
 
 

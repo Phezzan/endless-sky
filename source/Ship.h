@@ -142,8 +142,7 @@ public:
 	// Check if this ship is currently able to enter hyperspace to it target.
 	int CheckHyperspace() const;
 	// Check what type of hyperspce jump this ship is making (0 = not allowed,
-	// 100 = hyperdrive, 150 = scram drive, 200 = jump drive).
-	int HyperspaceType() const;
+	unsigned HyperspaceType() const;
 	
 	// Check if the ship is thrusting. If so, the engine sound should be played.
 	bool IsThrusting() const;
@@ -181,6 +180,15 @@ public:
 	// This depends on how much fuel it has and what sort of hyperdrive it uses.
 	int JumpsRemaining() const;
 	// Get the amount of fuel expended per jump.
+    enum {
+        NO_HYPERSPACE = 0,
+        HYPERDRIVE,
+        SCRAMDRIVE,
+        JUMPDRIVE,
+        HYPERDRIVE_FUEL = 100,
+        SCRAMDRIVE_FUEL = 133,
+        JUMPDRIVE_FUEL = 150,
+    };
 	double JumpFuel() const;
 	
 	// Access how many crew members this ship has or needs.
@@ -284,7 +292,9 @@ private:
 	// Create one of this ship's explosions, within its mask. The explosions can
 	// either stay over the ship, or spread out if this is the final explosion.
 	void CreateExplosion(std::list<Effect> &effects, bool spread = false);
-	
+
+    // Set or unset the isDisabled flag based on the ship's state
+	bool UpdateDisabled();
 	
 private:
 	class Bay {
@@ -370,8 +380,8 @@ private:
 	const Planet *landingPlanet = nullptr;
 	
 	int hyperspaceCount = 0;
-	const System *hyperspaceSystem = nullptr;
 	int hyperspaceType = 0;
+	const System *hyperspaceSystem = nullptr;
 	Point hyperspaceOffset;
 	
 	std::map<const Effect *, int> explosionEffects;
