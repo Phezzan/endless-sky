@@ -31,7 +31,7 @@ int64_t Mortgage::Maximum(int64_t annualRevenue, int creditScore, int64_t curren
 	if(annualRevenue <= 0)
 		return 0;
 	
-	double interest = (600 - creditScore / 2) * .00001;
+	double interest = (1100 - creditScore) * .00001;
 	double power = pow(1. + interest, term);
 	double multiplier = interest * term * power / (power - 1.);
 	return static_cast<int64_t>(max(0., annualRevenue / multiplier));
@@ -41,10 +41,10 @@ int64_t Mortgage::Maximum(int64_t annualRevenue, int creditScore, int64_t curren
 
 // Create a new mortgage of the given amount.
 Mortgage::Mortgage(int64_t principal, int creditScore, int term)
-	: type(creditScore < 0 ? "Fine" : creditScore > 800 ? "Death Benefits" : "Mortgage"),
+	: type(creditScore < 0 ? "Fine" : creditScore >= 1000 ? "Death Benefits" : "Mortgage"),
 	principal(principal),
-	interest((600 - creditScore / 2) * .00001),
-	interestString("0." + to_string(600 - creditScore / 2) + "%"),
+	interest((1100 - creditScore) * .00001),
+	interestString("0." + to_string(static_cast<int>(100000. * interest)) + "%"),
 	term(term)
 {
 }

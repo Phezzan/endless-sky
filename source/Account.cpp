@@ -185,7 +185,7 @@ string Account::Step(int64_t assets, int64_t salaries)
 	if(hasDebts)
 	{
 		creditScore += paid ? 1 : -5;
-		creditScore = max(200, min(800, creditScore));
+		creditScore = max(0, min(999, creditScore));
 	}
 	
 	if(!(salariesPaid + mortgagesPaid + finesPaid))
