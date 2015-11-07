@@ -90,14 +90,14 @@ outfit "D94-YV Shield Generator"
 	"shield generation" 1.25
 	description "Warships use the D94-YV generator to outlast their opponents, but you can fit one in a smaller ship if you are willing to sacrifice engine power or weaponry to make space for it."
 
-outfit "D9999 Shield Generator"
+outfit "DX-9000 Shield Generator"
 	category "Systems"
 	cost 250000
 	thumbnail "outfit/huge shield"
 	"mass" 60
 	"outfit space" -60
 	"shield generation" 1.8
-	description "This is the most powerful shield generator available in human	space. Because of their large size, D9000 shield generators are mostly used in large warships to outlast any tactical disadvantage an enemy might spring."
+	description "This is the most powerful shield generator available in human	space. Because of their large size, DX-9000 shield generators are mostly used in large warships to outlast any tactical disadvantage an enemy might spring."
 
 outfit "S-270 Regenerator"
 	category "Systems"
@@ -127,7 +127,7 @@ outfit "Ramscoop"
 	cost 50000
 	thumbnail "outfit/ramscoop"
 	"mass" 3
-	"outfit space" -6
+	"outfit space" -5
 	"ramscoop" 1
 	description "In the early days of space exploration, when ships could travel through half a dozen systems before encountering an established colony where they could refuel, ramscoops were an essential piece of equipment, harvesting plasma from the solar wind to refill your hyperspace fuel tanks. Although you can install more than one ramscoop, additional ramscoops on a single ship are not as effective as the first."
 
@@ -136,8 +136,8 @@ outfit "Ramscoop Adv"
 	cost 200000
 	thumbnail "outfit/catalytic ramscoop"
 	"mass" 6
-	"outfit space" -10
-	"ramscoop" 2
+	"outfit space" -8
+	"ramscoop" 4
 	description "An advanced Ramscoop designed for long range military scout vessels. With double the plasma concentration, it allows missions well beyond colonized space.
 
 outfit "Catalytic Ramscoop"
@@ -145,9 +145,9 @@ outfit "Catalytic Ramscoop"
 	cost 320000
 	thumbnail "outfit/catalytic ramscoop"
 	"mass" 9
-	"outfit space" -14
-	"ramscoop" 6
-	description "Ramscoop technology has been almost unchanged for centuries, because with nearly every system in human space settled there has not been a pressing need for ships to generate their own fuel. But with the Free Worlds war making travel once again more difficult, some engineers in the Deep recently invented a much-improved ramscoop for use in their merchant fleets."
+	"outfit space" -10
+	"ramscoop" 9
+	description "Ramscoop technology has been almost unchanged for centuries, because with nearly every system in human space settled there has not been a pressing need for ships to generate their own fuel. But with the Free Worlds war making travel once again more difficult, some engineers in the Deep recently invented a much-improved ramscoop for use in their merchant fleets to refuel 3x faster."
 
 outfit "Hyperdrive"
 	category "Systems"
@@ -217,9 +217,9 @@ outfit "Cloaking Device"
 	"mass" 10
 	"outfit space" -10
 	"cloak" .01
-	"cloaking energy" 1
-	"cloaking fuel" .2
-	description "You're sure the cloaking device is here somewhere, but you can't see it."
+	"cloaking energy" 0.125
+	"cloaking fuel" 0
+	description "You're sure the cloaking device is here somewhere, but you can't see it. Cloaking energy scales with total ship mass and velocity, so if you are low on energy reduce your mass or move more slowly."
 
 
 outfit "Mass Expansion"
