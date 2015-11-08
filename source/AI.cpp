@@ -52,6 +52,8 @@ namespace {
 	
 	bool CanBoard(const Ship &ship, const Ship &target)
 	{
+		if(&ship == &target)
+			return false;
 		if(target.IsDestroyed() || !target.IsTargetable() || target.GetSystem() != ship.GetSystem())
 			return false;
 		if(IsStranded(target) && !ship.GetGovernment()->IsEnemy(target.GetGovernment()))
@@ -64,7 +66,7 @@ namespace {
 
 AI::AI()
 	: step(0), keyDown(0), keyHeld(0), keyStuck(0), isLaunching(false),
-	isCloaking(false), shift(false), holdPosition(false), moveToMe(false)
+	isCloaking(false), shift(false), holdPosition(false), moveToMe(false), landKeyInterval(0)
 {
 }
 
@@ -85,6 +87,10 @@ void AI::UpdateKeys(PlayerInfo &player, bool isActive)
 	const Ship *flagship = player.Flagship();
 	if(!isActive || !flagship || flagship->IsDestroyed())
 		return;
+	
+	++landKeyInterval;
+	if(oldHeld.Has(Command::LAND))
+		landKeyInterval = 0;
 	
 	// Only toggle the "cloak" command if one of your ships has a cloaking device.
 	if(keyDown.Has(Command::CLOAK))
@@ -115,7 +121,7 @@ void AI::UpdateKeys(PlayerInfo &player, bool isActive)
 			}
 	
 	shared_ptr<Ship> target = flagship->GetTargetShip();
-	if(keyDown.Has(Command::FIGHT) && target)
+	if(keyDown.Has(Command::FIGHT) && target && !target->IsYours())
 	{
 		sharedTarget = target;
 		holdPosition = false;
@@ -430,7 +436,7 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 	// If this ship has no government, it has no enemies.
 	shared_ptr<Ship> target;
 	const Government *gov = ship.GetGovernment();
-	if(!gov)
+	if(!gov || ship.GetPersonality().IsPacifist())
 		return target;
 	
 	bool isPlayerEscort = ship.IsYours();
@@ -498,8 +504,9 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 				// Don't plunder unless there are no "live" enemies nearby.
 				range += 2000. * (2 * it->IsDisabled() - !hasBoarded);
 			}
-			// Focus on nearly dead ships.
-			range += 500. * (it->Shields() + it->Hull());
+			// Focus on damaged, but functional ships.
+			range += 500. * (it->Shields() + it->Hull() + it->IsDisabled());
+
 			if(range < closest)
 			{
 				closest = range;
@@ -1194,6 +1201,8 @@ Point AI::TargetAim(const Ship &ship)
 Command AI::AutoFire(const Ship &ship, const list<shared_ptr<Ship>> &ships, bool secondary) const
 {
 	Command command;
+	if(ship.GetPersonality().IsPacifist())
+		return command;
 	int index = -1;
 	
 	// Special case: your target is not your enemy. Do not fire, because you do
@@ -1442,7 +1451,7 @@ void AI::MovePlayer(Ship &ship, const PlayerInfo &player, const list<shared_ptr<
 			// selected, then press "land" again, do not toggle to the other if
 			// you are within landing range of the one you have selected.
 		}
-		else if(message.empty() && target)
+		else if(message.empty() && target && landKeyInterval < 60)
 		{
 			bool found = false;
 			const StellarObject *next = nullptr;

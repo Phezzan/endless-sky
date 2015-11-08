@@ -173,6 +173,7 @@ public:
 	// Get characteristics of this ship, as a fraction between 0 and 1.
 	double Shields() const;
 	double Hull() const;
+	double Armor() const;
 	double Energy() const;
 	double Heat() const;
 	double Fuel() const;
@@ -359,11 +360,13 @@ private:
 	// Various energy levels:
 	double shields = 0.;
 	double hull = 0.;
+	double armor= 0.;
 	double fuel = 0.;
 	double energy = 0.;
 	double heat = 0.;
 	double heatDissipation = .999;
 	double ionization = 0.;
+	mutable double jumpCost = -1.;
 	
 	int crew = 0;
 	int pilotCheck = 0;

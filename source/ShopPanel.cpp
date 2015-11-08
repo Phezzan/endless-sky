@@ -48,6 +48,7 @@ ShopPanel::ShopPanel(PlayerInfo &player, const vector<string> &categories)
 	if(playerShip)
 		playerShips.insert(playerShip);
 	SetIsFullScreen(true);
+	SetInterruptible(false);
 }
 
 
@@ -210,7 +211,8 @@ void ShopPanel::DrawButtons() const
 		string mod = "x " + to_string(modifier);
 		int modWidth = font.Width(mod);
 		font.Draw(mod, buyCenter + Point(-.5 * modWidth, 10.), dim);
-		font.Draw(mod, sellCenter + Point(-.5 * modWidth, 10.), dim);	
+		if(CanSellMultiple())
+			font.Draw(mod, sellCenter + Point(-.5 * modWidth, 10.), dim);	
 	}
 }
 
@@ -355,10 +357,17 @@ void ShopPanel::DrawShip(const Ship &ship, const Point &center, bool isSelected)
 
 
 
+bool ShopPanel::CanSellMultiple() const
+{
+	return true;
+}
+
+
+
 // Only override the ones you need; the default action is to return false.
 bool ShopPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command)
 {
-	if((key == 'l' || (key == 'w' && (mod & (KMOD_CTRL | KMOD_GUI)))) && FlightCheck())
+	if((key == 'l' || key == SDLK_ESCAPE || (key == 'w' && (mod & (KMOD_CTRL | KMOD_GUI)))) && FlightCheck())
 	{
 		player.UpdateCargoCapacities();
 		GetUI()->Pop(this);
@@ -372,7 +381,7 @@ bool ShopPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command)
 	}
 	else if(key == 's')
 	{
-		int modifier = Modifier();
+		int modifier = CanSellMultiple() ? Modifier() : 1;
 		for(int i = 0; i < modifier && CanSell(); ++i)
 			Sell();
 	}

@@ -359,11 +359,11 @@ void Engine::Step(bool isActive)
 	if(flagship)
 	{
 		info.SetBar("fuel", flagship->Fuel(),
-			flagship->Attributes().Get("fuel capacity") * .01);
+			flagship->Attributes().Get("fuel capacity") / flagship->JumpFuel());
 		info.SetBar("energy", flagship->Energy());
 		info.SetBar("heat", flagship->Heat());
-		info.SetBar("shields", flagship->Shields());
-		info.SetBar("hull", flagship->Hull(), 20.);
+		info.SetBar("shields", flagship->Shields(), 4.);
+		info.SetBar("hull", flagship->Hull(), 4.);
 	}
 	else
 	{
@@ -435,8 +435,8 @@ void Engine::Step(bool isActive)
 		
 		if(target->GetSystem() == player.GetSystem() && target->IsTargetable())
 		{
-			info.SetBar("target shields", target->Shields());
-			info.SetBar("target hull", target->Hull(), 20.);
+			info.SetBar("target shields", target->Shields(), 4.);
+			info.SetBar("target hull", target->Hull(), 4.);
 		
 			// The target area will be a square, with sides equal to the average
 			// of the width and the height of the sprite.

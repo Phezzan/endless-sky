@@ -246,14 +246,16 @@ void ShipInfoDisplay::UpdateAttributes(const Ship &ship)
 	attributesHeight += 20;
 	if(attributes.Get("hull repair rate"))
 	{
-		attributeLabels.push_back("hull repair / max:");
+		attributeLabels.push_back("hull repair / max # armor:");
 		attributeValues.push_back(Format::Number(60. * attributes.Get("hull repair rate"))
-			+ " / " + Format::Number(attributes.Get("hull")));
+			+ " / " + Format::Number(attributes.Get("hull")) 
+            + " # " + Format::Number(attributes.Get("armor")) );
 	}
 	else
 	{
-		attributeLabels.push_back("hull:");
-		attributeValues.push_back(Format::Number(attributes.Get("hull")));
+		attributeLabels.push_back("hull # armor:");
+		attributeValues.push_back(Format::Number(attributes.Get("hull")) 
+            + " # " + Format::Number(attributes.Get("armor")) );
 	}
 	attributesHeight += 20;
 	double emptyMass = attributes.Get("mass");

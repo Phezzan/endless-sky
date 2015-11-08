@@ -142,6 +142,7 @@ outfit "Beam Laser"
 		"firing heat" 1.2
 		"shield damage" 1
 		"hull damage" 2
+		"armor penetration" 0.8
 	description "In the early part of the space era, the settlements in the region of space known as the Deep developed in relative isolation from the rest of human space. One result of that isolation is that their weapons technology mostly uses beam weapons, instead of the energy projectile weapons that are more common elsewhere. A Beam Laser has a slightly shorter range than an Energy Blaster, but is also much more energy-efficient and does a comparable amount of damage."
 
 outfit "Heavy Laser"
@@ -165,6 +166,7 @@ outfit "Heavy Laser"
 		"firing heat" 2.2
 		"shield damage" 1.9
 		"hull damage" 3.7
+		"armor penetration" 0.8
 	description "The Heavy Laser is an upgraded Beam Laser with a significantly longer range and higher power. It is mostly intended for larger ships, where energy and space are plentiful, but some pilots consider a single Heavy Laser to be a worthwhile alternative to a pair of Beam Lasers, because the longer range makes up for the fact that it does not quite deal twice as much damage."
 
 outfit "Electron Beam"
@@ -188,6 +190,7 @@ outfit "Electron Beam"
 		"firing heat" 2.6
 		"shield damage" 2.9
 		"hull damage" 5.9
+		"armor penetration" 0.8
 	description "The Electron Beam is a recent development by the Deep Sky labs, a more powerful weapon with a design similar to their perennially popular laser guns."
 
 outfit "Laser Turret"
@@ -212,6 +215,7 @@ outfit "Laser Turret"
 		"firing heat" 2.4
 		"shield damage" 2
 		"hull damage" 4
+		"armor penetration" 0.8
 	description "Laser Turrets are hated by fighter pilots because it is entirely impossible to dodge them once you are within their reach. This turret carries a pair of lasers and can swivel instantly to fire on new targets as they approach. Laser Turrets are especially useful when mounted on slow-moving freighters to fend off packs of small pirate vessels."
 
 outfit "Heavy Laser Turret"
@@ -236,6 +240,7 @@ outfit "Heavy Laser Turret"
 		"firing heat" 4.4
 		"shield damage" 3.6
 		"hull damage" 7.4
+		"armor penetration" 0.8
 	description "For ships with enough space to install one, the Heavy Laser Turret is a powerful weapon, equally useful for driving off fighters and for bombarding larger targets with continuous fire without having to worry about pointing your ship in the right direction."
 
 outfit "Electron Turret"
@@ -260,6 +265,7 @@ outfit "Electron Turret"
 		"firing heat" 5.2
 		"shield damage" 5.8
 		"hull damage" 11.8
+		"armor penetration" 0.8
 	description "This turret places two of Deep Sky's recently developed electron beam weapons onto a rotating turret, providing unsurpassed accuracy and power for shooting down fast-moving targets."
 
 outfit "Anti-Missile Turret"
@@ -320,6 +326,7 @@ outfit "Particle Cannon"
 		"hit force" 80
 		"shield damage" 54
 		"hull damage" 78
+		"armor penetration" -2
 	description "The Particle Cannon works by accelerating a short burst of particles to near-relativistic speeds. When mounted on a ship that can turn fast enough to keep it trained on approaching ships, it becomes a nearly unbeatable weapon, capable of destroying smaller ships before they can even approach close enough for their comparatively short-ranged weapons to be effective."
 
 outfit "Proton Gun"
@@ -355,6 +362,7 @@ outfit "Proton Fragment"
 		"hit force" 6
 		"shield damage" 8
 		"hull damage" 10
+		"armor penetration" -0.5
 
 outfit "Plasma Cannon"
 	category "Guns"
@@ -400,6 +408,7 @@ outfit "Pulse Cannon"
 		"firing heat" 70
 		"shield damage" 45
 		"hull damage" 41
+		"armor penetration" -1
 	description "Like most examples of Hai engineering that you have seen, the Pulse Cannon does not stand out as a particularly advanced or elegant technology, but it has a reputation for being efficient, reliable, and well-balanced."
 
 outfit "Pulse Turret"
@@ -423,6 +432,7 @@ outfit "Pulse Turret"
 		"firing heat" 70
 		"shield damage" 45
 		"hull damage" 41
+		"armor penetration" -1
 	description "Pulse Cannons are the primary offensive weapon used by Hai ships. This turret mounts two pulse cannons side by side and allows them to track even the fastest-moving of targets."
 
 outfit "Ion Cannon"
@@ -448,6 +458,7 @@ outfit "Ion Cannon"
 		"shield damage" 168
 		"hull damage" 90
 		"ion damage" 5
+		"armor penetration" -1.5
 	description "Ion cannons do not do as much damage as some other weapons, but they disrupt the electrical systems on any ship they hit, draining its energy. If a ship has sizeable battery reserves, this may not have any effect, but for a ship running at near its energy generation capacity an ion strike can take it out of the battle for a few seconds while it recovers."
 
 outfit "Plasma Turret"
@@ -512,6 +523,7 @@ outfit "Flamethrower Projectile"
 		"shield damage" .8
 		"hull damage" 1.1
 		"heat damage" 200
+		"armor penetration" -0.5
 
 outfit "Meteor Missile"
 	category "Ammunition"
@@ -553,6 +565,7 @@ outfit "Meteor Missile Launcher"
 		"hull damage" 70
 		"hit force" 30
 		"missile strength" 4
+		"armor penetration" -9
 	description "The Meteor Missile is the cheapest and simplest homing weapon available in human space. The tracking system on these missiles is notoriously unreliable, and they are easily destroyed by anti-missile systems, but in large numbers or when fired at a slow-moving target they can be deadly."
 
 outfit "Sidewinder Missile"
@@ -595,6 +608,7 @@ outfit "Sidewinder Missile Launcher"
 		"hull damage" 60
 		"hit force" 25
 		"missile strength" 12
+		"armor penetration" -7
 	description "The Sidewinder Missile is designed by Lovelace Labs, which is ironically also the designed of the Anti-Missile Turret. Rumors say that the two engineering teams at Lovelace who make the missiles and the anti-missiles are locked in furious competition with each other: the result has been generation after generation of smarter missiles and then smarter turrets to fend them off."
 	description "	Although not as powerful or cheap as the popular Meteor missiles, Sidewinders have several advantages, including their better tracking systems and protective casings that make them much harder for anti-missile systems to destroy."
 
@@ -630,6 +644,7 @@ outfit "Javelin Pod"
 		"hull damage" 26
 		"hit force" 5
 		"missile strength" 2
+		"armor penetration" -4
 	description "The Javelin Pod fires a rapid stream of unguided missiles. A Javelin Pod does far more damage than any gun of a comparable size, and has a longer range as well, but once a ship has fired off all its ammunition it must leave combat and find a planet where it can buy more, which makes Javelins less useful in protracted battles. As a result, they are very popular with pirates as a way to quickly disable a small target."
 
 outfit "Hai Tracker"
@@ -673,6 +688,7 @@ outfit "Hai Tracker Pod"
 		"hull damage" 160
 		"hit force" 50
 		"missile strength" 16
+		"armor penetration" -9
 	description "Trackers are a fast, powerful, and accurate homing weapon. Their only weakness is their large turning radius: if a Tracker misses its target, it takes a long time to turn around."
 
 outfit "Torpedo"
@@ -715,6 +731,7 @@ outfit "Torpedo Launcher"
 		"hull damage" 340
 		"hit force" 40
 		"missile strength" 20
+		"armor penetration" -19
 	description "Torpedoes are the most powerful homing weapon, but they move slowly enough that fast ships can simply outrun them, making them most useful against large targets or against small ships at times when they are too distracted to dodge. Torpedo launchers are also much larger than other missile systems, so they are most often found in capital ships."
 
 outfit "Typhoon Torpedo"
@@ -757,6 +774,7 @@ outfit "Typhoon Launcher"
 		"hull damage" 480
 		"hit force" 70
 		"missile strength" 30
+		"armor penetration" -24
 	description "Typhoon Torpedoes are an improved torpedo technology; they do considerably more damage than ordinary torpedoes. However, they are also much slower, because they are intended mostly for use against large and slow-moving capital ships. As a result, sufficiently skilled pilots can often dodge around them."
 
 outfit "Heavy Rocket"
@@ -797,6 +815,7 @@ outfit "Heavy Rocket Launcher"
 		"hull damage" 600
 		"hit force" 80
 		"missile strength" 16
+		"armor penetration" -49
 	description "Heavy Rockets are the most powerful missile weapon available, but at a price: instead of having a homing system, they simply fire straight forward and rely on a proximity trigger to set them off. Once triggered, however, they damage all ships within their blast radius, making them highly effective against clusters of fighters."
 
 outfit "Nuclear Missile"
@@ -833,5 +852,6 @@ outfit "Nuclear Missile"
 		"shield damage" 9000
 		"hull damage" 7000
 		"hit force" 4000
+		"armor penetration" -999
 	description "It has been centuries since the last nuclear war was fought, and until very recently, most people in the galaxy assumed that that era of chaos and destruction was forever behind us..."
 	description "	[Nuclear missiles are a one-shot weapon: each missile occupies a gun slot, and after it is fired, the slot it was in is left empty.]"

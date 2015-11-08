@@ -15,6 +15,7 @@ ship "Aerie"
 		"cost" 3500000
 		"shields" 5700
 		"hull" 3800
+		"armor" 1.0
 		"required crew" 10
 		"bunks" 28
 		"mass" 130
@@ -67,6 +68,7 @@ ship "Argosy"
 		"cost" 1560000
 		"shields" 4200
 		"hull" 5200
+		"armor" 1.3
 		"required crew" 2
 		"bunks" 14
 		"mass" 275
@@ -111,6 +113,56 @@ ship "Argosy"
 	description "The Argosy from Southbound Shipyards is very popular with merchants not because of its capacity, which is actually slightly smaller than the Syndicate Freighter, but because it can hold it own in combat even against a small pirate fleet."
 	description "	The Argosy is also a very easy ship to upgrade with faster engines or more powerful weapons as needed, so many privately owned Argosies have very different capabilities than the stock model."
 
+ship "ArgoNavis"
+	sprite "ship/argosy"
+	attributes
+		category "Light Warship"
+		"cost" 2250000
+		"shields" 5000
+		"hull" 5600
+		"armor" 2.75
+		"required crew" 2
+		"bunks" 15
+		"mass" 292
+		"drag" 5.5
+		"heat dissipation" .75
+		"cargo space" 130
+		"outfit space" 345
+		"weapon capacity" 128
+		"engine capacity" 92
+		"fuel capacity" 550
+		weapon
+			"blast radius" 60
+			"shield damage" 600
+			"hull damage" 300
+			"hit force" 900
+	outfits
+		"Heavy Laser" 4
+		"Heavy Anti-Missile Turret"
+		"Heavy Laser Turret" 
+		
+		"Breeder Reactor"
+		"LP036a Battery Pack"
+		"D67-TM Shield Generator"
+		
+		"Greyhound Plasma Thruster"
+		"Greyhound Plasma Steering"
+		"Scram Drive"
+		
+	engine -16 82
+	engine 16 82
+	gun -22 -37 "Heavy Laser"
+	gun 22 -37 "Heavy Laser"
+	gun -23 -37 "Heavy Laser"
+	gun 23 -37 "Heavy Laser"
+	turret 0 -8 "Heavy Laser Turret"
+	turret 0 12 "Heavy Anti-Missile Turret"
+	explode "tiny explosion" 10
+	explode "small explosion" 25
+	explode "medium explosion" 25
+	explode "big explosion" 10
+	description "The ArgoNavis was a custom variant of the Southbound Shipyards Argosy. The designer spared no expense to improve the already combat capable freighter.  He succeeded a little too well and the ArgoNavis was classified a warship by the Republic, limiting available market."
+	description "	The ArgoNavis retains much of the Argosy's customizability, but it was specifically designed to fit atomic engines and heavy lasers."
 
 
 ship "Arrow"
@@ -120,6 +172,7 @@ ship "Arrow"
 		"cost" 1200000
 		"shields" 2000
 		"hull" 800
+		"armor" 0.75
 		"required crew" 1
 		"bunks" 6
 		"mass" 125
@@ -167,6 +220,7 @@ ship "Bactrian"
 		"cost" 12600000
 		"shields" 17500
 		"hull" 17200
+		"armor" 3.2
 		"required crew" 70
 		"bunks" 245
 		"mass" 940
@@ -229,6 +283,7 @@ ship "Bastion"
 		"cost" 3560000
 		"shields" 6700
 		"hull" 8400
+		"armor" 2.9
 		"required crew" 32
 		"bunks" 47
 		"mass" 580
@@ -284,6 +339,7 @@ ship "Behemoth"
 		"cost" 7800000
 		"shields" 7600
 		"hull" 12600
+		"armor" 1.3
 		"required crew" 12
 		"bunks" 30
 		"mass" 540
@@ -336,6 +392,7 @@ ship "Berserker"
 		"cost" 520000
 		"shields" 2200
 		"hull" 1200
+		"armor" 0.6
 		"required crew" 1
 		"bunks" 3
 		"mass" 110
@@ -381,6 +438,7 @@ ship "Blackbird"
 		"cost" 2230000
 		"shields" 4400
 		"hull" 1800
+		"armor" 0.6
 		"required crew" 2
 		"bunks" 28
 		"mass" 220
@@ -426,6 +484,7 @@ ship "Bounder"
 		"cost" 1140000
 		"shields" 2200
 		"hull" 1400
+		"armor" 0.34
 		"required crew" 2
 		"bunks" 17
 		"mass" 130
@@ -470,6 +529,7 @@ ship "Bulk Freighter"
 		"cost" 9400000
 		"shields" 4000
 		"hull" 15200
+		"armor" 0.8
 		"required crew" 6
 		"bunks" 18
 		"mass" 870
@@ -526,6 +586,7 @@ ship "Carrier"
 		"cost" 15200000
 		"shields" 21400
 		"hull" 16600
+		"armor" 3.0
 		"required crew" 111
 		"bunks" 184
 		"mass" 910
@@ -597,6 +658,7 @@ ship "Clipper"
 		"cost" 900000
 		"shields" 2700
 		"hull" 1600
+		"armor" 0.3
 		"required crew" 1
 		"bunks" 9
 		"mass" 150
@@ -676,6 +738,7 @@ ship "Corvette"
 		"cost" 4400000
 		"shields" 6100
 		"hull" 2400
+		"armor" 0.9
 		"required crew" 8
 		"bunks" 32
 		"mass" 150
@@ -729,6 +792,7 @@ ship "Cruiser"
 		"cost" 11200000
 		"shields" 19600
 		"hull" 12800
+		"armor" 3.4
 		"required crew" 81
 		"bunks" 136
 		"mass" 680
@@ -792,6 +856,7 @@ ship "Dagger"
 		"cost" 129000
 		"shields" 900
 		"hull" 600
+		"armor" 0.1
 		"required crew" 1
 		"bunks" 1
 		"mass" 20
@@ -831,6 +896,7 @@ ship "Dreadnought"
 		"cost" 11900000
 		"shields" 18100
 		"hull" 14600
+		"armor" 3.1
 		"required crew" 84
 		"bunks" 147
 		"mass" 630
@@ -887,17 +953,18 @@ ship "Falcon"
 		category "Heavy Warship"
 		"cost" 10900000
 		"shields" 12800
-		"hull" 7400
-		"required crew" 52
+		"hull" 9001
+		"armor" 3.6
+		"required crew" 42
 		"bunks" 75
-		"mass" 510
-		"drag" 7.1
-		"heat dissipation" .7
+		"mass" 500
+		"drag" 6.66
+		"heat dissipation" .88
 		"fuel capacity" 600
-		"cargo space" 90
-		"outfit space" 540
+		"cargo space" 95
+		"outfit space" 575
 		"weapon capacity" 240
-		"engine capacity" 140
+		"engine capacity" 150
 		weapon
 			"blast radius" 160
 			"shield damage" 1600
@@ -911,8 +978,8 @@ ship "Falcon"
 		
 		"Breeder Reactor"
 		"LP144a Battery Pack"
-		"D41-HY Shield Generator"
-		"Liquid Nitrogen Cooler"
+		"D67-TM Shield Generator"
+		"Liquid Helium Cooler"
 		
 		"Impala Plasma Thruster"
 		"Impala Plasma Steering"
@@ -943,6 +1010,7 @@ ship "Firebird"
 		"cost" 3700000
 		"shields" 6400
 		"hull" 5600
+		"armor" 1.75
 		"required crew" 7
 		"bunks" 22
 		"mass" 290
@@ -994,13 +1062,14 @@ ship "Flivver"
 		"cost" 180000
 		"shields" 1400
 		"hull" 400
+		"armor" 0.1
 		"required crew" 1
 		"bunks" 4
 		"mass" 40
 		"drag" 1.0
 		"heat dissipation" .9
 		"fuel capacity" 600
-		"cargo space" 8
+		"cargo space" 10
 		"outfit space" 130
 		"weapon capacity" 25
 		"engine capacity" 45
@@ -1038,6 +1107,7 @@ ship "Freighter"
 		"cost" 730000
 		"shields" 2000
 		"hull" 4000
+		"armor" 0.6
 		"required crew" 2
 		"bunks" 7
 		"mass" 240
@@ -1087,6 +1157,7 @@ ship "Frigate"
 		"cost" 5200000
 		"shields" 8000
 		"hull" 5000
+		"armor" 1.5
 		"required crew" 21
 		"bunks" 44
 		"mass" 310
@@ -1140,6 +1211,7 @@ ship "Fury"
 		"cost" 490000
 		"shields" 2000
 		"hull" 800
+		"armor" 0.35
 		"required crew" 1
 		"bunks" 3
 		"mass" 70
@@ -1187,6 +1259,7 @@ ship "Gunboat"
 		"cost" 3200000
 		"shields" 5800
 		"hull" 2800
+		"armor" 0.75
 		"required crew" 7
 		"bunks" 12
 		"mass" 150
@@ -1235,6 +1308,7 @@ ship "Hauler"
 		"cost" 1430000
 		"shields" 2500
 		"hull" 6400
+		"armor" 0.6
 		"required crew" 3
 		"bunks" 12
 		"mass" 250
@@ -1287,6 +1361,7 @@ ship "Hauler II"
 		"cost" 2340000
 		"shields" 2900
 		"hull" 10400
+		"armor" 0.666
 		"required crew" 3
 		"bunks" 12
 		"mass" 360
@@ -1339,6 +1414,7 @@ ship "Hauler III"
 		"cost" 3260000
 		"shields" 3300
 		"hull" 13400
+		"armor" 0.88
 		"required crew" 3
 		"bunks" 12
 		"mass" 470
@@ -1391,6 +1467,7 @@ ship "Hawk"
 		"cost" 670000
 		"shields" 2500
 		"hull" 1000
+		"armor" 0.67
 		"required crew" 1
 		"bunks" 4
 		"mass" 133
@@ -1434,6 +1511,7 @@ ship "Heavy Shuttle"
 		"cost" 320000
 		"shields" 700
 		"hull" 1400
+		"armor" 0.33
 		"required crew" 1
 		"bunks" 9
 		"mass" 100
@@ -1475,6 +1553,7 @@ ship "Lance"
 		"cost" 93000
 		"shields" 700
 		"hull" 800
+		"armor" 0.15
 		"required crew" 1
 		"bunks" 1
 		"mass" 30
@@ -1515,6 +1594,7 @@ ship "Leviathan"
 		"cost" 9800000
 		"shields" 14400
 		"hull" 10000
+		"armor" 2.4
 		"required crew" 43
 		"bunks" 64
 		"mass" 480
@@ -1568,6 +1648,7 @@ ship "Manta"
 		"cost" 3400000
 		"shields" 5900
 		"hull" 3000
+		"armor" 0.85
 		"required crew" 6
 		"bunks" 10
 		"mass" 170
@@ -1618,6 +1699,7 @@ ship "Mule"
 		"cost" 2580000
 		"shields" 5400
 		"hull" 8800
+		"armor" 1.6
 		"required crew" 6
 		"bunks" 43
 		"mass" 320
@@ -1671,6 +1753,7 @@ ship "Osprey"
 		"cost" 4400000
 		"shields" 7200
 		"hull" 3200
+		"armor" 1.35
 		"required crew" 9
 		"bunks" 24
 		"mass" 270
@@ -1722,6 +1805,7 @@ ship "Protector"
 		"cost" 5500000
 		"shields" 9500
 		"hull" 13000
+		"armor" 1.5
 		"required crew" 36
 		"bunks" 69
 		"mass" 500
@@ -1776,6 +1860,7 @@ ship "Quicksilver"
 		"cost" 1590000
 		"shields" 3200
 		"hull" 1600
+		"armor" 0.6
 		"required crew" 3
 		"bunks" 6
 		"mass" 120
@@ -1822,6 +1907,7 @@ ship "Rainmaker"
 		"cost" 1580000
 		"shields" 3500
 		"hull" 2400
+		"armor" 0.9
 		"required crew" 7
 		"bunks" 14
 		"mass" 180
@@ -1872,6 +1958,7 @@ ship "Raven"
 		"cost" 2000000
 		"shields" 4700
 		"hull" 2800
+		"armor" 0.65
 		"required crew" 6
 		"bunks" 13
 		"mass" 130
@@ -1921,6 +2008,7 @@ ship "Scout"
 		"cost" 800000
 		"shields" 1200
 		"hull" 1000
+		"armor" 0.4
 		"required crew" 1
 		"bunks" 12
 		"mass" 110
@@ -1967,6 +2055,7 @@ ship "Jumper"
 		"cost" 1250000
 		"shields" 2000
 		"hull" 1200
+		"armor" 0.55
 		"required crew" 1
 		"bunks" 12
 		"mass" 110
@@ -2003,7 +2092,7 @@ ship "Jumper"
 	explode "small explosion" 20
 	explode "medium explosion" 15
 	description "An overhaul to the Lionheart Scoutship, the Jumper exchanges fuel capacity for combat readiness."
-	description "A complete redesign using advanced materials, this is one of the most versatile transports."
+	description "  A complete redesign using advanced materials, this is one of the most versatile transports."
 
 
 ship "Shuttle"
@@ -2013,6 +2102,7 @@ ship "Shuttle"
 		"cost" 180000
 		"shields" 500
 		"hull" 1200
+		"armor" 0.2
 		"required crew" 1
 		"bunks" 6
 		"mass" 70
@@ -2054,6 +2144,7 @@ ship "Sparrow"
 		"cost" 225000
 		"shields" 1200
 		"hull" 600
+		"armor" 0.25
 		"required crew" 1
 		"bunks" 2
 		"mass" 50
@@ -2098,6 +2189,7 @@ ship "Splinter"
 		"cost" 3100000
 		"shields" 5200
 		"hull" 3400
+		"armor" 1.25
 		"required crew" 12
 		"bunks" 21
 		"mass" 250
@@ -2148,6 +2240,7 @@ ship "Star Barge"
 		"cost" 210000
 		"shields" 600
 		"hull" 2000
+		"armor" 0.2
 		"required crew" 1
 		"bunks" 3
 		"mass" 70
@@ -2189,6 +2282,7 @@ ship "Star Queen"
 		"cost" 5500000
 		"shields" 4100
 		"hull" 4400
+		"armor" 0.9
 		"required crew" 43
 		"bunks" 112
 		"mass" 230
@@ -2267,6 +2361,7 @@ ship "Wasp"
 		"cost" 400000
 		"shields" 1500
 		"hull" 1000
+		"armor" 0.3
 		"required crew" 1
 		"bunks" 2
 		"mass" 60

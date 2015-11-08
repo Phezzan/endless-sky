@@ -77,6 +77,8 @@ public:
 	double HullDamage() const;
 	double HeatDamage() const;
 	double IonDamage() const;
+	double RadiationDamage() const;
+	double ArmorPenetration() const;
 	
 	double TotalLifetime() const;
 	double Range() const;
@@ -126,12 +128,15 @@ private:
 	double heatDamage = 0.;
 	double ionDamage = 0.;
 	double hitForce = 0.;
+	double radiationDamage = 0.;
+	double armorPenetration = 0.;
 	
 	// Cache the calculation of these values, for faster access.
 	mutable double totalShieldDamage = -1.;
 	mutable double totalHullDamage = -1.;
 	mutable double totalHeatDamage = -1.;
 	mutable double totalIonDamage = -1.;
+	mutable double totalRadiationDamage = -1.;
 	mutable double totalLifetime = -1.;
 };
 

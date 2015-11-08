@@ -118,6 +118,8 @@ void Ship::Load(const DataNode &node)
 			shields = child.Value(1);
 		else if(child.Token(0) == "hull" && child.Size() >= 2)
 			hull = child.Value(1);
+		else if(child.Token(0) == "armor" && child.Size() >= 2)
+			armor = child.Value(1);
 		else if(child.Token(0) == "position" && child.Size() >= 3)
 			position = Point(child.Value(1), child.Value(2));
 		else if(child.Token(0) == "system" && child.Size() >= 2)
@@ -293,6 +295,7 @@ void Ship::Save(DataWriter &out) const
 		out.Write("fuel", fuel);
 		out.Write("shields", shields);
 		out.Write("hull", hull);
+		out.Write("armor", armor);
 		out.Write("position", position.X(), position.Y());
 		
 		for(const Point &point : enginePoints)
@@ -550,6 +553,8 @@ bool Ship::Move(list<Effect> &effects)
 	if(!fuel || !(attributes.Get("hyperdrive") || attributes.Get("jump drive")))
 		hyperspaceSystem = nullptr;
 	
+	double mass = Mass();
+
 	// Handle ionization effects.
 	if(ionization)
 	{
@@ -580,12 +585,11 @@ bool Ship::Move(list<Effect> &effects)
 	energy = min(energy, attributes.Get("energy capacity"));
 	
 	heat *= heatDissipation;
-	if(heat > Mass() * 100.)
+	if(heat > mass * 100.)
 		isOverheated = true;
-	else if(heat < Mass() * 90.)
+	else if(heat < mass * 90.)
 		isOverheated = false;
 	
-	double mass = Mass();
 	double maxShields = attributes.Get("shields");
 	shields = min(shields, maxShields);
 	double maxHull = attributes.Get("hull");
@@ -1018,7 +1022,8 @@ bool Ship::Move(list<Effect> &effects)
 		{
 			if(!target->IsDisabled() && government->IsEnemy(target->government))
 				isBoarding = false;
-			else if(target->IsDestroyed() || target->IsLanding() || target->IsHyperspacing())
+			else if(target->IsDestroyed() || target->IsLanding() || target->IsHyperspacing()
+					|| target->GetSystem() != GetSystem())
 				isBoarding = false;
 		}
 		if(isBoarding && pilotCheck > 0)
@@ -1089,12 +1094,12 @@ void Ship::Launch(list<shared_ptr<Ship>> &ships)
 // Check if this ship is boarding another ship.
 shared_ptr<Ship> Ship::Board(bool autoPlunder)
 {
-	if(!hasBoarded || CannotAct())
+	if(!hasBoarded)
 		return shared_ptr<Ship>();
 	hasBoarded = false;
 	
 	shared_ptr<Ship> victim = GetTargetShip();
-	if(!victim || victim->IsDestroyed())
+	if(CannotAct() || !victim || victim->IsDestroyed() || victim->GetSystem() != GetSystem())
 		return shared_ptr<Ship>();
 	
 	// For a fighter, "board" means "return to ship."
@@ -1133,9 +1138,39 @@ shared_ptr<Ship> Ship::Board(bool autoPlunder)
 	if(autoPlunder)
 	{
 		// Take any outfits that fit.
-		for(auto &it : victim->outfits)
-			while(it.second && cargo.Transfer(it.first, -1))
-				--it.second;
+		int stolen;
+		do {
+			stolen = 0;
+			for(auto &it : victim->outfits)
+			{
+				// Don't allow other ships to steal engines or hyperdrives. It's
+				// unrealistic, but a stolen hyperdrive is the one thing you
+				// might fail to notice and land anyways, in which case your
+				// game may autosave in a state where you are stranded.
+				if(it.first->Get("hyperdrive") ||  it.first->Get("jump drive"))
+					continue;
+				
+				int count = it.second;
+				while(stolen < count && cargo.Transfer(it.first, -1))
+					++stolen;
+				
+				if(stolen && victim->IsYours())
+				{
+					ostringstream out;
+					if(stolen == 1)
+						out << "A " << it.first->Name() << " was";
+					else
+						out << stolen << " " << it.first->Name() << "s were";
+					out << " stolen from " << victim->Name() << ".";
+					Messages::Add(out.str());
+				}
+				if(stolen)
+				{
+					victim->AddOutfit(it.first, -stolen);
+					break;
+				}
+			}
+		} while(stolen);
 		// Take any commodities that fit.
 		victim->cargo.TransferAll(&cargo);
 		// Stop targeting this ship.
@@ -1270,7 +1305,7 @@ bool Ship::IsDisabled() const
 bool Ship::UpdateDisabled() 
 {
 	isDisabled = (hull < MinimumHull() || (crew < 1 && RequiredCrew() > 0));
-    return isDisabled;
+	return isDisabled;
 }
 
 
@@ -1380,27 +1415,28 @@ int Ship::CheckHyperspace() const
 unsigned Ship::HyperspaceType() const
 {
 	if(IsDisabled())
-		return 0;
+		return NO_HYPERSPACE;
 	const System *destination = GetTargetSystem();
 	if(!destination)
-		return 0;
-	
-	// Check what equipment this ship has.
-	bool hasHyperdrive = attributes.Get("hyperdrive");
-	bool hasScramDrive = attributes.Get("scram drive");
-	bool hasJumpDrive = attributes.Get("jump drive");
-	
-	if(hasHyperdrive || hasScramDrive)
+		return NO_HYPERSPACE;
+
+	unsigned type = attributes.Get("scram drive") ? SCRAMDRIVE :(
+					attributes.Get("hyperdrive")  ? HYPERDRIVE : 
+													NO_HYPERSPACE);
+
+	if(type)
 		for(const System *link : currentSystem->Links())
 			if(link == destination)
-				return hasScramDrive ? 2 : 1;
+				return type;
 	
-	if(hasJumpDrive)
+	type = attributes.Get("jump drive") ? JUMPDRIVE : NO_HYPERSPACE;
+
+	if(type)
 		for(const System *link : currentSystem->Neighbors())
 			if(link == destination)
-				return 3;
+				return type;
 	
-	return 0;
+	return NO_HYPERSPACE;
 }
 
 
@@ -1603,18 +1639,27 @@ int Ship::JumpsRemaining() const
 
 double Ship::JumpFuel() const
 {
-	unsigned type = HyperspaceType();
-
-	if (type)
+	if(GetTargetSystem())
 	{
-		static double const cost[] = { NO_HYPERSPACE, HYPERDRIVE_FUEL, SCRAMDRIVE_FUEL, JUMPDRIVE_FUEL };
-		return cost[type];
+		unsigned const type = HyperspaceType();
+
+		if (type)
+		{
+			static double const cost[] = { NO_HYPERSPACE, HYPERDRIVE_FUEL, SCRAMDRIVE_FUEL, JUMPDRIVE_FUEL };
+			jumpCost = cost[type];
+			return jumpCost;
+		}
+	}
+	else if (jumpCost >= 0.)
+	{
+		return jumpCost;
 	}
 
-	return 
-		attributes.Get("jump drive") ? JUMPDRIVE_FUEL : 
-		attributes.Get("scram drive") ? SCRAMDRIVE_FUEL : 
-		HYPERDRIVE_FUEL;
+	jumpCost =	attributes.Get("jump drive") ? JUMPDRIVE_FUEL : 
+				attributes.Get("scram drive") ? SCRAMDRIVE_FUEL : 
+				HYPERDRIVE_FUEL;
+
+	return jumpCost;
 }
 
 
@@ -1638,7 +1683,7 @@ int Ship::RequiredCrew() const
 void Ship::AddCrew(int count)
 {
 	crew += count;
-    UpdateDisabled();
+	UpdateDisabled();
 }
 
 
@@ -1693,26 +1738,41 @@ int Ship::TakeDamage(const Projectile &projectile, bool isBlast)
 	double hitForce = weapon.HitForce();
 	double heatDamage = weapon.HeatDamage();
 	double ionDamage = weapon.IonDamage();
+	double radiationDamage = weapon.RadiationDamage();
 	bool wasDisabled = IsDisabled();
 	bool wasDestroyed = IsDestroyed();
 	
 	if(shields > shieldDamage)
 	{
 		shields -= shieldDamage;
-		heat += .5 * heatDamage;
-		ionization += .5 * ionDamage;
+		heat += max(.5 * heatDamage - armor, 0.);
+		ionization += .25 * ionDamage;
 	}
 	else if(!shields || shieldDamage)
 	{
+		double armorTmp = max(armor * (1. - weapon.ArmorPenetration()), 0.);
 		if(shieldDamage)
 		{
-			hullDamage *= (1. - (shields / shieldDamage));
+			double const shieldReduction = (1. - (shields / shieldDamage));
+			hullDamage *= shieldReduction;
+			radiationDamage *= shieldReduction;
 			shields = 0.;
 		}
-		hull -= hullDamage;
-		heat += heatDamage;
+		hull -= max(hullDamage - armorTmp, 0.);
+		heat += max(heatDamage - armorTmp, 0.);
 		ionization += ionDamage;
-        UpdateDisabled();
+		if (radiationDamage > armorTmp)
+		{
+			int crewTmp = Crew();
+			if(crewTmp > 0)
+			{ 
+				radiationDamage = radiationDamage - armorTmp;
+				double loss = radiationDamage - Random::Int(hull / crewTmp);
+				if (loss > 1)
+					crew -= pow(loss, 0.33);
+			}
+		}
+		UpdateDisabled();
 	}
 	
 	if(hitForce && !IsHyperspacing())
@@ -1730,7 +1790,8 @@ int Ship::TakeDamage(const Projectile &projectile, bool isBlast)
 	// If this ship was hit directly and did not consider itself an enemy of the
 	// ship that hit it, it is now "provoked" against that government.
 	if(!isBlast && projectile.GetGovernment() && !projectile.GetGovernment()->IsEnemy(government)
-			&& (Shields() < .9 || Hull() < .9 || !personality.IsForbearing()))
+			&& (Shields() < .9 || Hull() < .9 || !personality.IsForbearing())
+			&& !personality.IsPacifist())
 		type |= ShipEvent::PROVOKE;
 	
 	return type;
@@ -1944,6 +2005,8 @@ void Ship::AddOutfit(const Outfit *outfit, int count)
 			cargo.SetSize(attributes.Get("cargo space"));
 		if(outfit->Get("hull"))
 			hull += outfit->Get("hull") * count;
+		if(outfit->Get("armor"))
+			armor += outfit->Get("armor") * count;
 	}
 }
 

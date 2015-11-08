@@ -98,6 +98,10 @@ void Weapon::LoadWeapon(const DataNode &node)
 				shieldDamage = child.Value(1);
 			else if(child.Token(0) == "hull damage")
 				hullDamage = child.Value(1);
+			else if(child.Token(0) == "radiation damage")
+				radiationDamage = child.Value(1);
+			else if(child.Token(0) == "armor penetration")
+				armorPenetration = child.Value(1);
 			else if(child.Token(0) == "heat damage")
 				heatDamage = child.Value(1);
 			else if(child.Token(0) == "ion damage")
@@ -230,6 +234,16 @@ double Weapon::IonDamage() const
 }
 
 
+double Weapon::RadiationDamage() const
+{
+	if(totalRadiationDamage < 0.)
+	{
+		totalRadiationDamage = radiationDamage;
+		for(const auto &it : submunitions)
+			totalRadiationDamage += it.first->RadiationDamage() * it.second;
+	}
+	return totalRadiationDamage;
+}
 
 double Weapon::TotalLifetime() const
 {
@@ -243,6 +257,10 @@ double Weapon::TotalLifetime() const
 	return totalLifetime;
 }
 
+double Weapon::ArmorPenetration() const
+{
+	return armorPenetration;
+}
 
 
 double Weapon::Range() const

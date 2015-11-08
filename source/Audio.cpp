@@ -80,6 +80,7 @@ namespace {
 	map<string, Sound> sounds;
 	vector<Source> sources;
 	vector<unsigned> recycledSources;
+	vector<unsigned> endingSources;
 	unsigned maxSources = 255;
 	
 	vector<string> loadQueue;
@@ -96,11 +97,11 @@ void Audio::Init(const vector<string> &sources)
 {
 	device = alcOpenDevice(nullptr);
 	if(!device)
-		throw runtime_error("Unable to open audio device!");
+		return;
 	
 	context = alcCreateContext(device, nullptr);
 	if(!context || !alcMakeContextCurrent(context))
-		throw runtime_error("Unable to create audio context!");
+		return;
 	
 	alListener3f(AL_POSITION, 0., 0., 0.);
 	alListenerf(AL_GAIN, volume);
@@ -221,8 +222,8 @@ void Audio::Step()
 			}
 			else
 			{
-				alSourceStop(source.ID());
-				recycledSources.push_back(source.ID());
+				alSourcei(source.ID(), AL_LOOPING, false);
+				endingSources.push_back(source.ID());
 			}
 		}
 		else
@@ -234,6 +235,20 @@ void Audio::Step()
 				newSources.push_back(source);
 			else
 				recycledSources.push_back(source.ID());
+		}
+	}
+	// These sources were looping and are now wrapping up a loop.
+	auto it = endingSources.begin();
+	while(it != endingSources.end())
+	{
+		ALint state;
+		alGetSourcei(*it, AL_SOURCE_STATE, &state);
+		if(state == AL_PLAYING)
+			++it;
+		else
+		{
+			recycledSources.push_back(*it);
+			it = endingSources.erase(it);
 		}
 	}
 	newSources.swap(sources);
@@ -301,9 +316,13 @@ void Audio::Quit()
 	}
 	sounds.clear();
 	
-	alcMakeContextCurrent(nullptr);
-	alcDestroyContext(context);
-	alcCloseDevice(device);
+	if(context)
+	{
+		alcMakeContextCurrent(nullptr);
+		alcDestroyContext(context);
+	}
+	if(device)
+		alcCloseDevice(device);
 }
 
 
