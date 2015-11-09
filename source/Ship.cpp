@@ -501,8 +501,8 @@ void Ship::SetPersonality(const Personality &other)
 	personality = other;
 	if(personality.IsDerelict())
 	{
-		shields = 0.;
-		hull = .5 * MinimumHull();
+		//shields = 0.;
+		//hull = .5 * MinimumHull();
 		isDisabled = true;
 	}
 }
@@ -594,10 +594,10 @@ bool Ship::Move(list<Effect> &effects)
 	shields = min(shields, maxShields);
 	double maxHull = attributes.Get("hull");
 	hull = min(hull, maxHull);
-	isDisabled = isOverheated || isDisabled;
+	bool problems = isOverheated || isDisabled;
 
 	// Update ship supply levels.
-	if(!isDisabled)
+	if(!problems)
 	{
 		energy += attributes.Get("energy generation") - ionization;
 		energy = max(0., energy);
@@ -871,7 +871,7 @@ bool Ship::Move(list<Effect> &effects)
 			TransferFuel(sqrt(ramscoop) * -(0.028 + .002 * pow(velocity.LengthSquared(), 0.34)), nullptr);
 
 		double cloakingSpeed = attributes.Get("cloak");
-		if(commands.Has(Command::CLOAK) && cloakingSpeed && !isDisabled && !hyperspaceCount 
+		if(commands.Has(Command::CLOAK) && cloakingSpeed && !problems && !hyperspaceCount 
 			&& zoom == 1.)
 		{
 			double cloakFuel  = attributes.Get("cloaking fuel");
@@ -929,11 +929,12 @@ bool Ship::Move(list<Effect> &effects)
 					UpdateDisabled();
 			}
 		}
+		UpdateStrength();
 	}
 	
 	// This ship is not landing or entering hyperspace. So, move it. If it is
 	// disabled, all it can do is slow down to a stop.
-	if(isDisabled)
+	if(problems)
 		velocity *= 1. - attributes.Get("drag") / mass;
 	else if(pilotCheck > 0)
 	{
@@ -1011,7 +1012,7 @@ bool Ship::Move(list<Effect> &effects)
 	if(isBoarding && (commands.Has(Command::FORWARD | Command::BACK) || commands.Turn()))
 		isBoarding = false;
 	shared_ptr<const Ship> target = (CanBeCarried() ? GetParent() : GetTargetShip());
-	if(target && !isDisabled)
+	if(target && !problems)
 	{
 		Point dp = (target->position - position);
 		double distance = dp.Length();
@@ -1048,7 +1049,11 @@ bool Ship::Move(list<Effect> &effects)
 				isBoarding = false;
 				hasBoarded = true;
 			}
+			else
+				target.SetBoarder(shared_ptr<Ship>(this));
 		}
+		else
+			target.SetBoarder(shared_ptr<Ship>());
 	}
 	
 	// And finally: move the ship!
@@ -1302,10 +1307,25 @@ bool Ship::IsDisabled() const
 	return isDisabled;
 }
 
-bool Ship::UpdateDisabled() 
+bool Ship::UpdateDisabled()
 {
-	isDisabled = (hull < MinimumHull() || (crew < 1 && RequiredCrew() > 0));
-	return isDisabled;
+	if (crew < 1 && RequiredCrew() > 0)
+	{
+		isDisabled = true;
+		SetGovernment(GameData::Governments().Get("Derelict"));
+
+		SetPersonality(Personality::Derelict());
+	}
+	else 
+		isDisabled = hull < MinimumHull();
+
+	if (isDisabled && commands.Has(Command::BOARD))
+	{
+		shared_ptr<const Ship> target = GetTargetShip();
+		if (target != nullptr)
+			target.SetBoarder(shared_ptr<Ship>());
+	}
+	return 
 }
 
 
@@ -1596,7 +1616,10 @@ double Ship::Shields() const
 	return maximum ? min(1., shields / maximum) : 0.;
 }
 
-
+double Ship::ShieldsRaw() const
+{
+	return shields;
+} 
 
 double Ship::Hull() const
 {
@@ -1604,6 +1627,10 @@ double Ship::Hull() const
 	return maximum ? min(1., hull / maximum) : 1.;
 }
 
+double Ship::HullRaw() const
+{
+	return hull;
+}
 
 
 double Ship::Energy() const
@@ -1612,6 +1639,11 @@ double Ship::Energy() const
 	return maximum ? min(1., energy / maximum) : (hull > 0.) ? 1. : 0.;
 }
 
+
+double Ship::EnergyRaw() const
+{
+	return energy;
+}
 
 
 double Ship::Heat() const
@@ -1626,6 +1658,11 @@ double Ship::Fuel() const
 {
 	double maximum = attributes.Get("fuel capacity");
 	return maximum ? min(1., fuel / maximum) : 0.;
+}
+
+double Ship::FuelRaw() const
+{
+	return fuel;
 }
 
 
@@ -1663,6 +1700,30 @@ double Ship::JumpFuel() const
 }
 
 
+double Ship::Strength() const
+{
+	if (strength >= 0.)
+		return strength;
+	return UpdateStrength();
+}
+
+double Ship::UpdateStrength() const
+{
+	double hp  = max(0., hull - MinimumHull()) + shields;
+	double dps = 0.;
+
+	for(const Armament::Weapon &weapon : armament.Get())
+	{
+		const Outfit *outfit = weapon.GetOutfit();
+		if(outfit && !weapon.IsAntiMissile())
+		{
+			if(outfit->Ammo() && !OutfitCount(outfit->Ammo()))
+				continue;
+			dps += outfit->Strength();
+		}
+	}
+	return strength = sqrt(hp * dps);
+}
 
 int Ship::Crew() const
 {
@@ -1790,7 +1851,7 @@ int Ship::TakeDamage(const Projectile &projectile, bool isBlast)
 	// If this ship was hit directly and did not consider itself an enemy of the
 	// ship that hit it, it is now "provoked" against that government.
 	if(!isBlast && projectile.GetGovernment() && !projectile.GetGovernment()->IsEnemy(government)
-			&& (Shields() < .9 || Hull() < .9 || !personality.IsForbearing())
+			&& hullDamage > armor && (Shields() < .88 || !personality.IsForbearing())
 			&& !personality.IsPacifist())
 		type |= ShipEvent::PROVOKE;
 	
@@ -2082,6 +2143,10 @@ shared_ptr<Ship> Ship::GetShipToAssist() const
 }
 
 
+shared_ptr<Ship> Ship::GetBoarder() const
+{
+	return boarder.lock();
+}
 
 const StellarObject *Ship::GetTargetPlanet() const
 {
@@ -2118,6 +2183,10 @@ void Ship::SetShipToAssist(const shared_ptr<Ship> &ship)
 }
 
 
+void Ship::SetBoarder(const shared_ptr<Ship> &ship)
+{
+	boarder = ship;
+}
 
 
 void Ship::SetTargetPlanet(const StellarObject *object)

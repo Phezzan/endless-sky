@@ -14,7 +14,7 @@ if 'SCHROOT_CHROOT_NAME' in os.environ and 'steamrt' in os.environ['SCHROOT_CHRO
 
 # Required build flags. If you want to use SSE optimization, you can turn on
 # -msse3 or (if just building for your own computer) -march=native.
-env.Append(CCFLAGS = ["-std=c++0x", "-O3", "-Wall"])
+env.Append(CCFLAGS = ["-std=c++0x", "-O3", "-march=native", "-Wall"])
 env.Append(LIBS = [
 	"SDL2",
 	"png",

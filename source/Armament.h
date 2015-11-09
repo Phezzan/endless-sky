@@ -116,14 +116,20 @@ public:
 	// target's relative position and velocity and the velocity of the
 	// projectile. If it cannot hit the target, this returns NaN.
 	static double RendezvousTime(const Point &p, const Point &v, double vp);
+
+    // Min / Max Range of the offensive weapons in this armament
+	double MinRange() const;
+	double MaxRange() const;
 	
-	
+
 private:
 	// Note: the Armament must be copied when an instance of a Ship is made, so
 	// it should not hold any pointers specific to one ship (including to
 	// elements of this Armament itself).
 	std::map<const Outfit *, int> streamReload;
 	std::vector<Weapon> weapons;
+    mutable double minRange = -1.;
+    mutable double maxRange = -1.;
 };
 
 

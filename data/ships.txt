@@ -141,7 +141,7 @@ ship "ArgoNavis"
 		"Heavy Anti-Missile Turret"
 		"Heavy Laser Turret" 
 		
-		"Breeder Reactor"
+		"Fission Reactor"
 		"LP036a Battery Pack"
 		"D67-TM Shield Generator"
 		
@@ -161,7 +161,7 @@ ship "ArgoNavis"
 	explode "small explosion" 25
 	explode "medium explosion" 25
 	explode "big explosion" 10
-	description "The ArgoNavis was a custom variant of the Southbound Shipyards Argosy. The designer spared no expense to improve the already combat capable freighter.  He succeeded a little too well and the ArgoNavis was classified a warship by the Republic, limiting available market."
+	description "The ArgoNavis variant of the Southbound Shipyards Argosy was produced to capitalize on the venerable design's popularity. The designer spared no expense to improve the already combat capable freighter.  He succeeded a little too well and the ArgoNavis was classified a warship by the Republic, limiting available market. The company responded by labeling the ship a collector's item."
 	description "	The ArgoNavis retains much of the Argosy's customizability, but it was specifically designed to fit atomic engines and heavy lasers."
 
 

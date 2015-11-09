@@ -20,19 +20,38 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 class DataNode;
 class DataWriter;
 
-
-
 // Class defining an AI "personality": what actions it takes, and how skilled
 // and aggressive it is in combat. This also includes some more specialized
 // behaviors, like plundering ships or launching surveillance drones, that are
 // used to make some fleets noticeably different from others.
 class Personality {
 public:
+    enum type{
+        PACIFIST = 1,
+        FORBEARING = 2,
+        TIMID = 4,
+        DISABLES = 8,
+        PLUNDERS = 16,
+        HEROIC = 32,
+        STAYING = 64,
+        ENTERING = 128,
+        NEMESIS = 256,
+        SURVEILLANCE = 512,
+        UNINTERESTED = 1024,
+        WAITING = 2048,
+        DERELICT = 4096,
+        FLEEING = 8192,
+        ESCORT = 16384,
+    };
+
 	Personality();
+	Personality(enum type t);
 	
 	void Load(const DataNode &node);
 	void Save(DataWriter &out) const;
-	
+
+    void Add(unsigned f);
+    void Remove(unsigned f);
 	bool IsPacifist() const;
 	bool IsForbearing() const;
 	bool IsTimid() const;
@@ -51,8 +70,8 @@ public:
 	
 	const Point &Confusion() const;
 	
-	static Personality Defender();
-	
+    static Personality Defender();
+    static Personality Derelict();
 	
 private:
 	void Parse(const std::string &token);

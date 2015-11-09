@@ -100,6 +100,8 @@ fleet "Large Southern Merchants"
 	variant 15
 		"Argosy (Turret)"
 	variant 10
+		"ArgoNavis"
+	variant 10
 		"Bastion"
 		"Freighter" 3
 	variant 10
@@ -133,7 +135,7 @@ fleet "Large Southern Merchants"
 		"Argosy" 2
 	variant 10
 		"Argosy (Blaster)"
-		"Argosy (Laser)"
+		"ArgoNavis"
 	variant 10
 		"Argosy (Turret)"
 		"Argosy (Missile)"
@@ -195,6 +197,8 @@ fleet "Small Core Merchants"
 		"Dagger"
 	variant 3
 		"Argosy"
+	variant 3
+		"ArgoNavis"
 	variant 2
 		"Argosy (Blaster)"
 	variant 2
@@ -549,6 +553,8 @@ fleet "Large Free Worlds"
 	variant 4
 		"Argosy"
 	variant 3
+		"ArgoNavis"
+	variant 3
 		"Argosy (Blaster)"
 	variant 2
 		"Argosy (Laser)"
@@ -673,6 +679,8 @@ fleet "Large Militia"
 		"Fury (Laser)"
 	variant 4
 		"Argosy"
+	variant 3
+		"ArgoNavis"
 	variant 3
 		"Argosy (Blaster)"
 	variant 2
@@ -1116,6 +1124,8 @@ fleet "Large Southern Pirates"
 	variant 5
 		"Argosy"
 	variant 3
+		"ArgoNavis"
+	variant 3
 		"Argosy (Blaster)"
 	variant 2
 		"Argosy (Laser)"
@@ -1153,6 +1163,9 @@ fleet "Large Southern Pirates"
 	variant 1
 		"Argosy (Missile)"
 		"Hawk (Rocket)"
+	variant 2
+		"ArgoNavis"
+		"Hawk"
 	variant 4
 		"Bastion"
 	variant 2
@@ -1240,6 +1253,8 @@ fleet "Large Independent"
 		"Argosy (Missile)"
 	variant 2
 		"Argosy (Turret)"
+	variant 2
+		"ArgoNavis"
 	variant 4
 		"Clipper"
 	variant 2

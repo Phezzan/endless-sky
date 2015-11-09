@@ -446,17 +446,10 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 		if(locked && locked->GetSystem() == ship.GetSystem() && !locked->IsDisabled())
 			return locked;
 	}
-	
-	// If this ship is not armed, do not make it fight.
-	double minRange = numeric_limits<double>::infinity();
-	double maxRange = 0.;
-	for(const Armament::Weapon &weapon : ship.Weapons())
-		if(weapon.GetOutfit() && !weapon.IsAntiMissile())
-		{
-			minRange = min(minRange, weapon.GetOutfit()->Range());
-			maxRange = max(maxRange, weapon.GetOutfit()->Range());
-		}
-	if(!maxRange)
+
+	double minRange = ship.GetArmament().MinRange();
+	double maxRange = ship.GetArmament().MaxRange();
+	if(maxRange < 0.)
 		return target;
 	
 	shared_ptr<Ship> oldTarget = ship.GetTargetShip();
@@ -493,19 +486,26 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 			// If your personality it to disable ships rather than destroy them,
 			// never target disabled ships.
 			if(it->IsDisabled() && !person.Plunders()
-					&& (person.Disables() || (!person.IsNemesis() && it != oldTarget)))
+				&& (person.Disables() || (!person.IsNemesis() && it != oldTarget)))
 				continue;
 			
 			if(!person.Plunders())
-				range += 5000. * it->IsDisabled();
+			{
+				shared_ptr<Ship> boarder = it->GetBoarder();
+			
+				if(boarder && !gov->IsEnemy(boarder->GetGovernment()))
+					continue;
+				else
+					range += 5000. * it->IsDisabled();
+			}
 			else
 			{
 				bool hasBoarded = Has(ship, it, ShipEvent::BOARD);
 				// Don't plunder unless there are no "live" enemies nearby.
 				range += 2000. * (2 * it->IsDisabled() - !hasBoarded);
 			}
-			// Focus on damaged, but functional ships.
-			range += 500. * (it->Shields() + it->Hull() + it->IsDisabled());
+			// Focus on weak ships.
+			range += 10. * sqrt(it->ShieldsRaw() + it->HullRaw());
 
 			if(range < closest)
 			{
@@ -537,8 +537,9 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 	}
 	
 	// Run away if your target is not disabled and you are badly damaged.
+	// Run away if your target is scary powerful. This makes 'trick' builds (like heat weapons) likely to run
 	if(!isDisabled && (ship.GetPersonality().IsFleeing() ||
-			(ship.Shields() + ship.Hull() < 1. && !ship.GetPersonality().IsHeroic())))
+			(ship.Strength() * 2. < target.Strength() && !ship.GetPersonality().IsHeroic())))
 		target.reset();
 	
 	return target;
@@ -1079,8 +1080,12 @@ void AI::DoCloak(Ship &ship, Command &command, const list<shared_ptr<Ship>> &shi
 		{
 			double fuel = ship.Fuel() * ship.Attributes().Get("fuel capacity");
 			fuel -= ship.Attributes().Get("cloaking fuel");
-			if(fuel < ship.JumpFuel())
+			if(fuel <= ship.JumpFuel())
 				return;
+		}
+		if(ship.Energy() < 0.5 && ship.Attributes().Get("cloaking energy"))
+		{
+			return;
 		}
 		// Otherwise, always cloak if you are in imminent danger.
 		static const double MAX_RANGE = 10000.;

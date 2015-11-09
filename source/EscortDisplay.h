@@ -42,7 +42,7 @@ private:
 		// Sorting operator.
 		bool operator<(const Icon &other) const;
 		
-		int Height() const;
+		static const int Height = 36;
 		void Merge(const Icon &other);
 		
 		const Sprite *sprite;
@@ -55,12 +55,12 @@ private:
 		std::vector<double> high;
 	};
 	
-	
 private:
 	void MergeStacks() const;
 	
-	
 private:
+    mutable int top = -1;
+    mutable int columns = 1;
 	mutable std::vector<Icon> icons;
 };
 

@@ -29,12 +29,9 @@ public:
 	const float *Get() const;
 	
 	Color Opaque() const;
-	
-	
+
 private:
-	float color[4];
+    float color[4];
 };
-
-
 
 #endif

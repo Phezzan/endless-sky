@@ -362,8 +362,8 @@ void Engine::Step(bool isActive)
 			flagship->Attributes().Get("fuel capacity") / flagship->JumpFuel());
 		info.SetBar("energy", flagship->Energy());
 		info.SetBar("heat", flagship->Heat());
-		info.SetBar("shields", flagship->Shields(), 4.);
-		info.SetBar("hull", flagship->Hull(), 4.);
+		info.SetBar("shields", flagship->Shields(), 6.);
+		info.SetBar("hull", flagship->Hull(), 6.);
 	}
 	else
 	{
@@ -435,8 +435,8 @@ void Engine::Step(bool isActive)
 		
 		if(target->GetSystem() == player.GetSystem() && target->IsTargetable())
 		{
-			info.SetBar("target shields", target->Shields(), 4.);
-			info.SetBar("target hull", target->Hull(), 4.);
+			info.SetBar("target shields", target->Shields(), 6.);
+			info.SetBar("target hull", target->Hull(), 6.);
 		
 			// The target area will be a square, with sides equal to the average
 			// of the width and the height of the sprite.
@@ -491,20 +491,22 @@ void Engine::Draw() const
 {
 	GameData::Background().Draw(position, velocity);
 	draw[drawTickTock].Draw();
-	
+
+    static const Color ShieldColor  = *GameData::Colors().Get("shields");
+    static const Color HullColor    = *GameData::Colors().Get("hull");
+    static const Color EnemyColor   = *GameData::Colors().Get("enemy");
+    static const Color AttackerColor= *GameData::Colors().Get("attacker");
+
 	for(const auto &it : statuses)
 	{
 		if(it.hull <= 0.)
 			continue;
-		
-		static const Color color[4] = {
-			Color(0., .5, 0., .25),
-			Color(.5, .15, 0., .25),
-			Color(.45, .5, 0., .25),
-			Color(.5, .3, 0., .25)
+		static const Color color[] = {
+            HullColor,
+            AttackerColor
 		};
-		RingShader::Draw(it.position, it.radius + 3., 1.5, it.shields, color[it.isEnemy]);
-		RingShader::Draw(it.position, it.radius, 1.5, it.hull, color[2 + it.isEnemy], 20.);
+		RingShader::Draw(it.position, it.radius + 3., 1.5, it.shields, ShieldColor, 6.);
+		RingShader::Draw(it.position, it.radius, 1.5, it.hull, color[it.isEnemy], 6.);
 	}
 	
 	if(flash)
@@ -514,7 +516,7 @@ void Engine::Draw() const
 	const Font &font = FontSet::Get(14);
 	const vector<Messages::Entry> &messages = Messages::Get(step);
 	Point messagePoint(
-		Screen::Left() + 120.,
+		Screen::Left() + Screen::Width() / 4.,
 		Screen::Bottom() - 20. * messages.size());
 	for(const auto &it : messages)
 	{

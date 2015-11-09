@@ -82,6 +82,9 @@ public:
 	
 	double TotalLifetime() const;
 	double Range() const;
+
+    // How much damage per second can this weapon do? (a guess)
+    double Strength() const;
 	
 	
 private:

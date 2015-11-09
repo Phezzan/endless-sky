@@ -32,6 +32,7 @@ shipyard "Southbound Advanced"
 	"Hauler II"
 	"Hauler III"
 	"Bastion"
+	"ArgoNavis"
 
 shipyard "Lionheart Basics"
 	"Scout"

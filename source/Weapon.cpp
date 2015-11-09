@@ -267,3 +267,9 @@ double Weapon::Range() const
 {
 	return Velocity() * TotalLifetime();
 }
+
+// 'Normal' DPS assuming target has equal shields and hull and no armor
+double Weapon::Strength() const
+{
+	return (ShieldDamage() + HullDamage()) * 30. / reload;
+}

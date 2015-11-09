@@ -41,7 +41,7 @@ class System;
 // Class representing a ship (either a model for sale or an instance of it). A
 // ship's information can be saved to a file, so that it can later be read back
 // in exactly the same state. The same class is used for the player's ship as
-// for all other ships, so their capabilities are exactly the same  within the
+// for all other ships, so their capabilities are exactly the same	within the
 // limits of what the AI knows how to command them to do.
 class Ship : public std::enable_shared_from_this<Ship> {
 public:
@@ -173,24 +173,30 @@ public:
 	// Get characteristics of this ship, as a fraction between 0 and 1.
 	double Shields() const;
 	double Hull() const;
-	double Armor() const;
 	double Energy() const;
 	double Heat() const;
 	double Fuel() const;
+
+	double ShieldsRaw() const;
+	double HullRaw() const;
+	double EnergyRaw() const;
+	double FuelRaw() const;
+	double Armor() const;
 	// Get the number of jumps this ship can make before running out of fuel.
 	// This depends on how much fuel it has and what sort of hyperdrive it uses.
 	int JumpsRemaining() const;
 	// Get the amount of fuel expended per jump.
-    enum {
-        NO_HYPERSPACE = 0,
-        HYPERDRIVE,
-        SCRAMDRIVE,
-        JUMPDRIVE,
-        HYPERDRIVE_FUEL = 100,
-        SCRAMDRIVE_FUEL = 133,
-        JUMPDRIVE_FUEL = 150,
-    };
+	enum {
+		NO_HYPERSPACE = 0,
+		HYPERDRIVE,
+		SCRAMDRIVE,
+		JUMPDRIVE,
+		HYPERDRIVE_FUEL = 100,
+		SCRAMDRIVE_FUEL = 133,
+		JUMPDRIVE_FUEL = 150,
+	};
 	double JumpFuel() const;
+	double Strength() const;
 	
 	// Access how many crew members this ship has or needs.
 	int Crew() const;
@@ -262,6 +268,7 @@ public:
 	// land on) and a target ship (to move to, and attack if hostile).
 	std::shared_ptr<Ship> GetTargetShip() const;
 	std::shared_ptr<Ship> GetShipToAssist() const;
+	std::shared_ptr<Ship> GetBoarder() const;
 	const StellarObject *GetTargetPlanet() const;
 	const System *GetTargetSystem() const;
 	const Planet *GetDestination() const;
@@ -269,6 +276,7 @@ public:
 	// Set this ship's targets.
 	void SetTargetShip(const std::shared_ptr<Ship> &ship);
 	void SetShipToAssist(const std::shared_ptr<Ship> &ship);
+	void SetBoarder(const std::shared_ptr<Ship> &ship);
 	void SetTargetPlanet(const StellarObject *object);
 	void SetTargetSystem(const System *system);
 	void SetDestination(const Planet *planet);
@@ -294,8 +302,10 @@ private:
 	// either stay over the ship, or spread out if this is the final explosion.
 	void CreateExplosion(std::list<Effect> &effects, bool spread = false);
 
-    // Set or unset the isDisabled flag based on the ship's state
+	// Set or unset the isDisabled flag based on the ship's state
 	bool UpdateDisabled();
+	// Update the strength value (for AI use) - called 2x per second by Move()
+	double UpdateStrength() const;
 	
 private:
 	class Bay {
@@ -367,6 +377,7 @@ private:
 	double heatDissipation = .999;
 	double ionization = 0.;
 	mutable double jumpCost = -1.;
+	mutable double strength = -1.;
 	
 	int crew = 0;
 	int pilotCheck = 0;
@@ -395,6 +406,7 @@ private:
 	// Target ships, planets, systems, etc.
 	std::weak_ptr<Ship> targetShip;
 	std::weak_ptr<Ship> shipToAssist;
+	std::weak_ptr<Ship> boarder;
 	const StellarObject *targetPlanet = nullptr;
 	const System *targetSystem = nullptr;
 	const Planet *destination = nullptr;

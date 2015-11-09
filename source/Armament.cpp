@@ -37,7 +37,7 @@ Armament::Weapon::Weapon(const Point &point, bool isTurret, const Outfit *outfit
 
 
 
-// Don't call this without checking HasOutfit()!
+// Don't call this without checking for null
 const Outfit *Armament::Weapon::GetOutfit() const
 {
 	return outfit;
@@ -251,14 +251,29 @@ void Armament::Add(const Outfit *outfit, int count)
 	
 	if(count < 0)
 	{
+		minRange = maxRange = -1.;
+
 		// Look for slots where this weapon is installed.
 		for(Weapon &weapon : weapons)
-			if(weapon.GetOutfit() == outfit)
+		{
+			Outfit const *slot = weapon.GetOutfit();
+			if(!slot)
+				continue;
+			if(slot == outfit && installed > count)
 			{
 				weapon.Uninstall();
-				if(--installed == count)
-					break;
+				--installed;
+				// Can't quit early - we have to recheck all the slots
 			}
+			else 
+			{
+				double const range = slot->Range();
+				if (range < minRange || minRange < 0. )
+					minRange = range;
+				if (range > maxRange)
+					maxRange = range;
+			}
+		}
 	}
 	else
 	{
@@ -268,7 +283,15 @@ void Armament::Add(const Outfit *outfit, int count)
 			{
 				weapon.Install(outfit);
 				if(++installed == count)
+				{
+					// Adding identical weapons, so we only need to update range once
+					double const range = outfit->Range();
+					if (range < minRange || minRange < 0. )
+						minRange = range;
+					if (range > maxRange)
+						maxRange = range;
 					break;
+				}
 			}
 	}
 	
@@ -408,11 +431,11 @@ double Armament::RendezvousTime(const Point &p, const Point &v, double vp)
 	// to intersect the target?
 	// (p.x + v.x*t)^2 + (p.y + v.y*t)^2 = vp^2*t^2
 	// p.x^2 + 2*p.x*v.x*t + v.x^2*t^2
-	//    + p.y^2 + 2*p.y*v.y*t + v.y^2t^2
-	//    - vp^2*t^2 = 0
+	//	  + p.y^2 + 2*p.y*v.y*t + v.y^2t^2
+	//	  - vp^2*t^2 = 0
 	// (v.x^2 + v.y^2 - vp^2) * t^2
-	//    + (2 * (p.x * v.x + p.y * v.y)) * t
-	//    + (p.x^2 + p.y^2) = 0
+	//	  + (2 * (p.x * v.x + p.y * v.y)) * t
+	//	  + (p.x^2 + p.y^2) = 0
 	double a = v.Dot(v) - vp * vp;
 	double b = 2. * p.Dot(v);
 	double c = p.Dot(p);
@@ -433,3 +456,6 @@ double Armament::RendezvousTime(const Point &p, const Point &v, double vp)
 
 	return numeric_limits<double>::quiet_NaN();
 }
+
+inline double MinRange() const{ return minRange; }
+inline double MaxRange() const{ return maxRange; }
