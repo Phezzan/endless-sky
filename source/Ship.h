@@ -45,6 +45,7 @@ class System;
 // limits of what the AI knows how to command them to do.
 class Ship : public std::enable_shared_from_this<Ship> {
 public:
+
 	// Load data for a type of ship:
 	void Load(const DataNode &node);
 	// When loading a ship, some of the outfits it lists may not have been
@@ -167,8 +168,8 @@ public:
 	bool CanRefuel(const Ship &other) const;
 	// Give the other ship enough fuel for it to jump.
 	double TransferFuel(double amount, Ship *to);
-	// Mark this ship as property of the given ship.
-	void WasCaptured(const std::shared_ptr<Ship> &capturer);
+	// restore basic function. Potentially change ownership
+	void CapturedBy(const std::shared_ptr<Ship> &capturer);
 	
 	// Get characteristics of this ship, as a fraction between 0 and 1.
 	double Shields() const;
@@ -195,8 +196,8 @@ public:
 		SCRAMDRIVE_FUEL = 133,
 		JUMPDRIVE_FUEL = 150,
 	};
-	double JumpFuel() const;
-	double Strength() const;
+	int JumpFuel() const;
+	int Strength() const;
 	
 	// Access how many crew members this ship has or needs.
 	int Crew() const;
@@ -263,6 +264,9 @@ public:
 	// Fire the given weapon (i.e. deduct whatever energy, ammo, or fuel it uses
 	// and add whatever heat it generates. Assume that CanFire() is true.
 	void ExpendAmmo(const Outfit *outfit);
+
+	inline double MinRange() const {return armament.MinRange();}
+	inline double MaxRange() const {return armament.MaxRange();}
 	
 	// Each ship can have a target system (to travel to), a target planet (to
 	// land on) and a target ship (to move to, and attack if hostile).
@@ -297,7 +301,7 @@ private:
 	// landing, hyperspacing, cloaking, disabled, or under-crewed.)
 	bool CannotAct() const;
 	// Get the hull amount at which this ship is disabled.
-	double MinimumHull() const;
+	unsigned MinimumHull() const;
 	// Create one of this ship's explosions, within its mask. The explosions can
 	// either stay over the ship, or spread out if this is the final explosion.
 	void CreateExplosion(std::list<Effect> &effects, bool spread = false);
@@ -305,7 +309,8 @@ private:
 	// Set or unset the isDisabled flag based on the ship's state
 	bool UpdateDisabled();
 	// Update the strength value (for AI use) - called 2x per second by Move()
-	double UpdateStrength() const;
+	int UpdateStrength() const;
+	void Initialize();
 	
 private:
 	class Bay {
@@ -376,8 +381,9 @@ private:
 	double heat = 0.;
 	double heatDissipation = .999;
 	double ionization = 0.;
-	mutable double jumpCost = -1.;
-	mutable double strength = -1.;
+	mutable int jumpCost=-1;
+	mutable int strength=-1;
+	mutable unsigned minimumHull=0;
 	
 	int crew = 0;
 	int pilotCheck = 0;

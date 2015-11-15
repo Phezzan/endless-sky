@@ -447,8 +447,9 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 			return locked;
 	}
 
-	double minRange = ship.GetArmament().MinRange();
-	double maxRange = ship.GetArmament().MaxRange();
+
+	double minRange = ship.MinRange();
+	double maxRange = ship.MaxRange();
 	if(maxRange < 0.)
 		return target;
 	
@@ -471,7 +472,7 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 		(minRange > 1000.) ? maxRange * 1.5 : 4000.;
 	const System *system = ship.GetSystem();
 	bool isDisabled = false;
-	for(const auto &it : ships)
+	for(const auto &it : ships) {
 		if(it->GetSystem() == system && it->IsTargetable() && gov->IsEnemy(it->GetGovernment()))
 		{
 			if(person.IsNemesis() && !it->GetGovernment()->IsPlayer())
@@ -491,12 +492,15 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 			
 			if(!person.Plunders())
 			{
-				shared_ptr<Ship> boarder = it->GetBoarder();
-			
-				if(boarder && !gov->IsEnemy(boarder->GetGovernment()))
-					continue;
-				else
-					range += 5000. * it->IsDisabled();
+				if (it->IsDisabled())
+				{
+					shared_ptr<const Ship> boarder = it->GetBoarder();
+
+					if(boarder && !gov->IsEnemy(boarder->GetGovernment()))
+						continue;
+					else
+						range += 5000.;
+				}
 			}
 			else
 			{
@@ -514,7 +518,8 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 				isDisabled = it->IsDisabled();
 			}
 		}
-	
+	}
+
 	bool cargoScan = ship.Attributes().Get("cargo scan");
 	bool outfitScan = ship.Attributes().Get("outfit scan");
 	if(!target && (cargoScan || outfitScan) && !isPlayerEscort)
@@ -524,7 +529,7 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 			if(it->GetSystem() == system && it->GetGovernment() != gov && it->IsTargetable())
 			{
 				if((cargoScan && !Has(ship, it, ShipEvent::SCAN_CARGO))
-						|| (outfitScan && !Has(ship, it, ShipEvent::SCAN_OUTFITS)))
+					|| (outfitScan && !Has(ship, it, ShipEvent::SCAN_OUTFITS)))
 				{
 					double range = it->Position().Distance(ship.Position());
 					if(range < closest)
@@ -538,8 +543,8 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 	
 	// Run away if your target is not disabled and you are badly damaged.
 	// Run away if your target is scary powerful. This makes 'trick' builds (like heat weapons) likely to run
-	if(!isDisabled && (ship.GetPersonality().IsFleeing() ||
-			(ship.Strength() * 2. < target.Strength() && !ship.GetPersonality().IsHeroic())))
+	if(target && !isDisabled && (ship.GetPersonality().IsFleeing() ||
+			(ship.Strength() * 2. < target->Strength() && !ship.GetPersonality().IsHeroic())))
 		target.reset();
 	
 	return target;

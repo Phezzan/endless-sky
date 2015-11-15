@@ -32,7 +32,15 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 using namespace std;
 
-
+void Ship::Initialize()
+{
+	if(!neverDisabled)
+		minimumHull = static_cast<unsigned>( max(.125 * attributes.Get("hull"), min(.50 * attributes.Get("hull"), 999.)));
+	else
+		minimumHull = 0;
+	JumpFuel();
+	UpdateStrength();
+}
 
 void Ship::Load(const DataNode &node)
 {
@@ -242,7 +250,9 @@ void Ship::FinishLoading()
 	cargo.SetSize(attributes.Get("cargo space"));
 	equipped.clear();
 	armament.FinishLoading();
-	
+
+	Initialize();
+
 	// Recharge, but don't recharge crew or fuel if not in the parent's system.
 	// Do not recharge if this ship's starting state was saved.
 	if(!hull)
@@ -925,7 +935,7 @@ bool Ship::Move(list<Effect> &effects)
 			if(hull > 0. && hull < maxHull && crew > rndCrew)
 			{
 				hull += (crew - rndCrew);
-				if(isDisabled && Random::Int(static_cast<int>(hull)) >= static_cast<unsigned>(MinimumHull()))
+				if(isDisabled && Random::Int(static_cast<int>(hull)) >= minimumHull)
 					UpdateDisabled();
 			}
 		}
@@ -1011,7 +1021,7 @@ bool Ship::Move(list<Effect> &effects)
 	// Boarding:
 	if(isBoarding && (commands.Has(Command::FORWARD | Command::BACK) || commands.Turn()))
 		isBoarding = false;
-	shared_ptr<const Ship> target = (CanBeCarried() ? GetParent() : GetTargetShip());
+	shared_ptr<Ship> target = (CanBeCarried() ? GetParent() : GetTargetShip());
 	if(target && !problems)
 	{
 		Point dp = (target->position - position);
@@ -1049,11 +1059,11 @@ bool Ship::Move(list<Effect> &effects)
 				isBoarding = false;
 				hasBoarded = true;
 			}
-			else
-				target.SetBoarder(shared_ptr<Ship>(this));
+			else if (target->GetBoarder() != shared_from_this())
+				target->SetBoarder(shared_from_this());
 		}
 		else
-			target.SetBoarder(shared_ptr<Ship>());
+			target->SetBoarder(shared_ptr<Ship>());
 	}
 	
 	// And finally: move the ship!
@@ -1119,8 +1129,8 @@ shared_ptr<Ship> Ship::Board(bool autoPlunder)
 	{
 		SetShipToAssist(shared_ptr<Ship>());
 		bool helped = victim->isDisabled;
-		victim->hull = max(victim->hull, victim->MinimumHull());
-		victim->isDisabled = false;
+		victim->CapturedBy(shared_ptr<Ship>()); // TODO
+		//victim->isDisabled = false;
 		// Transfer some fuel if needed.
 		if(!victim->JumpsRemaining() && CanRefuel(*victim))
 		{
@@ -1317,15 +1327,15 @@ bool Ship::UpdateDisabled()
 		SetPersonality(Personality::Derelict());
 	}
 	else 
-		isDisabled = hull < MinimumHull();
+		isDisabled = hull < minimumHull;
 
 	if (isDisabled && commands.Has(Command::BOARD))
 	{
-		shared_ptr<const Ship> target = GetTargetShip();
+		shared_ptr<Ship> target = GetTargetShip();
 		if (target != nullptr)
-			target.SetBoarder(shared_ptr<Ship>());
+			target->SetBoarder(shared_ptr<Ship>());
 	}
-	return 
+	return isDisabled;
 }
 
 
@@ -1577,34 +1587,37 @@ double Ship::TransferFuel(double amount, Ship *to)
 
 
 
-void Ship::WasCaptured(const shared_ptr<Ship> &capturer)
+void Ship::CapturedBy(const shared_ptr<Ship> &capturer)
 {
 	// Repair up to the point where it is just barely not disabled.
-	hull = max(hull, MinimumHull());
+	hull = max(static_cast<unsigned>(hull), minimumHull);
 	
 	// Set the new government.
-	government = capturer->GetGovernment();
+	if (capturer)
+	{
+		government = capturer->GetGovernment();
+
+		// Transfer some crew over. Only transfer the bare minimum unless even that
+		// is not possible, in which case, share evenly.
+		int totalRequired = capturer->RequiredCrew() + RequiredCrew();
+		int transfer = RequiredCrew();
+		if(totalRequired > capturer->Crew())
+			transfer = max(1, (capturer->Crew() * RequiredCrew()) / totalRequired);
+		capturer->AddCrew(-transfer);
+		AddCrew(transfer);
+
+		// Set the capturer as this ship's parent.
+		SetParent(capturer);
+		isSpecial = capturer->isSpecial;
+		personality = capturer->personality;
+	}
 	
-	// Transfer some crew over. Only transfer the bare minimum unless even that
-	// is not possible, in which case, share evenly.
-	int totalRequired = capturer->RequiredCrew() + RequiredCrew();
-	int transfer = RequiredCrew();
-	if(totalRequired > capturer->Crew())
-		transfer = max(1, (capturer->Crew() * RequiredCrew()) / totalRequired);
-	capturer->AddCrew(-transfer);
-	AddCrew(transfer);
-	
-	// Set the capturer as this ship's parent.
-	SetParent(capturer);
 	SetTargetShip(shared_ptr<Ship>());
 	SetTargetPlanet(nullptr);
 	SetTargetSystem(nullptr);
 	commands.Clear();
 	isDisabled = false;
 	hyperspaceSystem = nullptr;
-	
-	isSpecial = capturer->isSpecial;
-	personality = capturer->personality;
 }
 
 
@@ -1674,7 +1687,7 @@ int Ship::JumpsRemaining() const
 
 
 
-double Ship::JumpFuel() const
+int Ship::JumpFuel() const
 {
 	if(GetTargetSystem())
 	{
@@ -1682,12 +1695,12 @@ double Ship::JumpFuel() const
 
 		if (type)
 		{
-			static double const cost[] = { NO_HYPERSPACE, HYPERDRIVE_FUEL, SCRAMDRIVE_FUEL, JUMPDRIVE_FUEL };
+			static int const cost[] = { NO_HYPERSPACE, HYPERDRIVE_FUEL, SCRAMDRIVE_FUEL, JUMPDRIVE_FUEL };
 			jumpCost = cost[type];
 			return jumpCost;
 		}
 	}
-	else if (jumpCost >= 0.)
+	else if (jumpCost >= 0)
 	{
 		return jumpCost;
 	}
@@ -1700,17 +1713,15 @@ double Ship::JumpFuel() const
 }
 
 
-double Ship::Strength() const
+int Ship::Strength() const
 {
-	if (strength >= 0.)
-		return strength;
-	return UpdateStrength();
+	return strength;
 }
 
-double Ship::UpdateStrength() const
+int Ship::UpdateStrength() const
 {
-	double hp  = max(0., hull - MinimumHull()) + shields;
-	double dps = 0.;
+	unsigned hp  = max(0u, static_cast<unsigned>(hull) - minimumHull) + shields;
+	unsigned dps = 0.;
 
 	for(const Armament::Weapon &weapon : armament.Get())
 	{
@@ -2079,8 +2090,6 @@ Armament &Ship::GetArmament()
 	return armament;
 }
 
-
-
 const vector<Armament::Weapon> &Ship::Weapons() const
 {
 	return armament.Get();
@@ -2265,13 +2274,9 @@ bool Ship::CannotAct() const
 
 
 
-double Ship::MinimumHull() const
+unsigned Ship::MinimumHull() const
 {
-	if(neverDisabled)
-		return 0.;
-	
-	double maximumHull = attributes.Get("hull");
-	return max(.125 * maximumHull, min(.50 * maximumHull, 999.));
+	return minimumHull;
 }
 
 

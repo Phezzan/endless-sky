@@ -457,5 +457,3 @@ double Armament::RendezvousTime(const Point &p, const Point &v, double vp)
 	return numeric_limits<double>::quiet_NaN();
 }
 
-inline double MinRange() const{ return minRange; }
-inline double MaxRange() const{ return maxRange; }

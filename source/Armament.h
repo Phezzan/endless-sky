@@ -118,8 +118,8 @@ public:
 	static double RendezvousTime(const Point &p, const Point &v, double vp);
 
     // Min / Max Range of the offensive weapons in this armament
-	double MinRange() const;
-	double MaxRange() const;
+	inline double MinRange() const{ return minRange; }
+	inline double MaxRange() const{ return maxRange; }
 	
 
 private:
