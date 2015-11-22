@@ -21,23 +21,40 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 using namespace std;
 
 namespace {
+	static const int PACIFIST = 1;
+	static const int FORBEARING = 2;
+	static const int TIMID = 4;
+	static const int DISABLES = 8;
+	static const int PLUNDERS = 16;
+	static const int HEROIC = 32;
+	static const int STAYING = 64;
+	static const int ENTERING = 128;
+	static const int NEMESIS = 256;
+	static const int SURVEILLANCE = 512;
+	static const int UNINTERESTED = 1024;
+	static const int WAITING = 2048;
+	static const int DERELICT = 4096;
+	static const int FLEEING = 8192;
+	static const int ESCORT = 16384;
+	static const int FRUGAL = 32768;
 	
 	static const map<string, int> TOKEN = {
-		{"pacifist", Personality::PACIFIST},
-		{"forbearing", Personality::FORBEARING},
-		{"timid", Personality::TIMID},
-		{"disables", Personality::DISABLES},
-		{"plunders", Personality::PLUNDERS},
-		{"heroic", Personality::HEROIC},
-		{"staying", Personality::STAYING},
-		{"entering", Personality::ENTERING},
-		{"nemesis", Personality::NEMESIS},
-		{"surveillance", Personality::SURVEILLANCE},
-		{"uninterested", Personality::UNINTERESTED},
-		{"waiting", Personality::WAITING},
-		{"derelict", Personality::DERELICT},
-		{"fleeing", Personality::FLEEING},
-		{"escort", Personality::ESCORT}
+		{"pacifist", PACIFIST},
+		{"forbearing", FORBEARING},
+		{"timid", TIMID},
+		{"disables", DISABLES},
+		{"plunders", PLUNDERS},
+		{"heroic", HEROIC},
+		{"staying", STAYING},
+		{"entering", ENTERING},
+		{"nemesis", NEMESIS},
+		{"surveillance", SURVEILLANCE},
+		{"uninterested", UNINTERESTED},
+		{"waiting", WAITING},
+		{"derelict", DERELICT},
+		{"fleeing", FLEEING},
+		{"escort", ESCORT},
+		{"frugal", FRUGAL}
 	};
 	
 	double DEFAULT_CONFUSION = 10. * .001;
@@ -47,7 +64,7 @@ namespace {
 
 // Default settings for player's ships.
 Personality::Personality()
-	: flags(DISABLES), confusionMultiplier(DEFAULT_CONFUSION)
+	: flags(DISABLES | FRUGAL), confusionMultiplier(DEFAULT_CONFUSION)
 {
 }
 
@@ -203,6 +220,14 @@ bool Personality::IsFleeing() const
 bool Personality::IsEscort() const
 {
 	return flags & ESCORT;
+}
+
+
+
+
+bool Personality::IsFrugal() const
+{
+	return flags & FRUGAL;
 }
 
 
