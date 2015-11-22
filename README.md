@@ -1,24 +1,25 @@
 # endless-sky
 
-Phezzan's Modifications:
-	Rebalance
-		Shield Gens add to SP and regen faster!
-		Ship armor
-		Ships are much tougher (HP doubled)
-		Fuel cells suck less :D
-		Smaller batteries that store more
-		Weapons have armor penetration
-	Crew will repair their ship (slowly)
-	Systems (engines, FTL, etc) can be disabled
-	Explosive decompression can kill crew.
-	AI (friendly) will attempt not to blast ships you are boarding.
-	'Secure' systems (engines... laser rifles) cannot be plundered (cheat... gone!).
-	Escort display total overhaul
-	Hyperspace fuel wierdness... GONE!
-	Ramscoops - USEFUL!
-	'Death benefit' penalty reduced
-	Starting ships suck less
-	Trading is slightly more profitable
+Phezzan's Modifications:<br><ul>
+<li>Rebalance<ul>
+<li>Shield Gens add to SP and regen faster!</li>
+<li>Ship armor</li>
+<li>Ships are much tougher (HP doubled)</li>
+<li>Fuel cells suck less :D</li>
+<li>Smaller batteries that store more</li>
+<li>Weapons have armor penetration</li></ul></li>
+<li>Crew will repair their ship (slowly)</li>
+<li>Systems (engines, FTL, etc) can be disabled</li>
+<li>Explosive decompression can kill crew.</li>
+<li>AI (friendly) will attempt not to blast ships you are boarding.</li>
+<li>'Secure' systems (engines... laser rifles) cannot be plundered (cheat... gone!).</li>
+<li>Escort display total overhaul</li>
+<li>Hyperspace fuel wierdness... GONE!</li>
+<li>Ramscoops - USEFUL!</li>
+<li>'Death benefit' penalty reduced</li>
+<li>Starting ships suck less</li>
+<li>Trading is slightly more profitable</li>
+</ul>
 
 Explore other star systems. Earn money by trading, carrying passengers, or completing missions. Use your earnings to buy a better ship or to upgrade the weapons and engines on your current one. Blow up pirates. Take sides in a civil war. Or leave human space behind and hope to find some friendly aliens whose culture is more civilized than your own...
 
