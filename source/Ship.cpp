@@ -1942,7 +1942,7 @@ int Ship::TakeDamage(const Projectile &projectile, bool isBlast)
 				}
 			}
 		}
-		if (hullDamage > hull/50. && hull * 2. < attributes.Get("hull") )
+		if (hullDamage > 15. && hull * 2. < attributes.Get("hull") )
 		{
 			ostringstream out;
 			int rand = Random::Int(static_cast<int>(hullDamage));
