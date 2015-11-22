@@ -448,10 +448,14 @@ FILE *Files::Open(const string &path, bool write)
 
 string Files::Read(const string &path)
 {
-	 FILE *file = Open(path);
-	 string result = Read(file);
-	 fclose(file);
-	 return result;
+	FILE *file = Open(path);
+	string result;
+	if(file)
+	{
+		result = Read(file);
+		fclose(file);
+	}
+	return result;
 }
 
 
@@ -484,14 +488,20 @@ string Files::Read(FILE *file)
 
 void Files::Write(const string &path, const string &data)
 {
-	 FILE *file = Open(path, true);
-	 Write(file, data);
-	 fclose(file);
+	FILE *file = Open(path, true);
+	if(file)
+	{
+		Write(file, data);
+		fclose(file);
+	}
 }
 
 
 
 void Files::Write(FILE *file, const string &data)
 {
-	 fwrite(&data[0], 1, data.size(), file);
+	if(!file)
+		return;
+	
+	fwrite(&data[0], 1, data.size(), file);
 }

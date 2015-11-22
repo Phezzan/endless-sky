@@ -28,6 +28,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include <cmath>
 #include <map>
 #include <mutex>
+#include <set>
 #include <stdexcept>
 #include <thread>
 #include <vector>
@@ -103,7 +104,7 @@ void Audio::Init(const vector<string> &sources)
 	if(!context || !alcMakeContextCurrent(context))
 		return;
 	
-	alListener3f(AL_POSITION, 0., 0., 0.);
+	alListener3f(AL_POSITION, 0., 0., 20.);
 	alListenerf(AL_GAIN, volume);
 	
 	mainThreadID = this_thread::get_id();
@@ -142,7 +143,24 @@ double Audio::Volume()
 void Audio::SetVolume(double level)
 {
 	volume = min(1., max(0., level));
-	alListenerf(AL_GAIN, volume);
+	if(context)
+		alListenerf(AL_GAIN, volume);
+}
+
+
+
+void Audio::Mute()
+{
+	if(context)
+		alListenerf(AL_GAIN, 0);
+}
+
+
+
+void Audio::Unmute()
+{
+	if(context)
+		alListenerf(AL_GAIN, volume);
 }
 
 
@@ -175,7 +193,7 @@ void Audio::Update(const Point &listenerPosition, const Point &velocity)
 // Play the given sound, at full volume.
 void Audio::Play(const Sound *sound)
 {
-	Play(sound, listener, Point());
+	Play(sound, listener, listenerVelocity);
 }
 
 
@@ -305,6 +323,13 @@ void Audio::Quit()
 	}
 	sources.clear();
 	
+	for(unsigned id : endingSources)
+	{
+		alSourceStop(id);
+		alDeleteSources(1, &id);
+	}
+	endingSources.clear();
+	
 	for(unsigned id : recycledSources)
 		alDeleteSources(1, &id);
 	recycledSources.clear();
@@ -380,8 +405,8 @@ namespace {
 	
 	void Source::Move(const Point &position, const Point &velocity) const
 	{
-		alSource3f(source, AL_POSITION, position.X() * .001, position.Y() * .001, 0.f);
-		alSource3f(source, AL_VELOCITY, velocity.X() * .001, velocity.Y() * .001, 0.f);
+		alSource3f(source, AL_POSITION, position.X() * .01, position.Y() * .01, 0.f);
+		alSource3f(source, AL_VELOCITY, velocity.X() * .01, velocity.Y() * .01, 0.f);
 	}
 	
 	
@@ -402,6 +427,8 @@ namespace {
 	
 	void Load()
 	{
+		set<string> loaded;
+		
 		string path;
 		while(true)
 		{
@@ -419,8 +446,11 @@ namespace {
 			
 			// Unlock the mutex for the time-intensive part of the loop.
 			string name = Name(path);
-			if(!name.empty())
+			if(!name.empty() && loaded.find(name) == loaded.end())
+			{
+				loaded.insert(name);
 				sounds[name].Load(path);
+			}
 		}
 	}
 	

@@ -126,7 +126,7 @@ void InfoPanel::Draw() const
 	if(showShip)
 	{
 		interfaceInfo.SetCondition("ship tab");
-		if(canEdit && shipIt != player.Ships().begin())
+		if(canEdit && (shipIt->get() != player.Flagship() || (*shipIt)->IsParked()))
 			interfaceInfo.SetCondition((*shipIt)->IsParked() ? "show unpark" : "show park");
 		if(player.Ships().size() > 1)
 			interfaceInfo.SetCondition("four buttons");
@@ -140,11 +140,11 @@ void InfoPanel::Draw() const
 		{
 			bool allParked = true;
 			bool hasOtherShips = false;
-			auto it = player.Ships().begin() + 1;
-			for( ; it != player.Ships().end(); ++it)
-				if(!(*it)->IsDisabled())
+			const Ship *flagship = player.Flagship();
+			for(const auto &it : player.Ships())
+				if(!it->IsDisabled() && it.get() != flagship)
 				{
-					allParked &= (*it)->IsParked();
+					allParked &= it->IsParked();
 					hasOtherShips = true;
 				}
 			
@@ -194,22 +194,26 @@ bool InfoPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command)
 		showShip = true;
 		UpdateInfo();
 	}
+	else if(key == SDLK_PAGEUP || key == SDLK_PAGEDOWN)
+		Scroll(0, 6 * ((key == SDLK_PAGEUP) - (key == SDLK_PAGEDOWN)));
 	else if(showShip && key == 'R')
 		GetUI()->Push(new Dialog(this, &InfoPanel::Rename, "Change this ship's name?"));
-	else if(canEdit && showShip && key == 'P' && shipIt != player.Ships().begin())
-		player.ParkShip(shipIt->get(), !(*shipIt)->IsParked());
+	else if(canEdit && showShip && key == 'P')
+	{
+		if(shipIt->get() != player.Flagship() || (*shipIt)->IsParked())
+			player.ParkShip(shipIt->get(), !(*shipIt)->IsParked());
+	}
 	else if(canEdit && !showShip && key == 'n' && player.Ships().size() > 1)
 	{
 		bool allParked = true;
-		auto it = player.Ships().begin() + 1;
-		for( ; it != player.Ships().end(); ++it)
-			if(!(*it)->IsDisabled())
-				allParked &= (*it)->IsParked();
+		const Ship *flagship = player.Flagship();
+		for(const auto &it : player.Ships())
+			if(!it->IsDisabled() && it.get() != flagship)
+				allParked &= it->IsParked();
 		
-		it = player.Ships().begin() + !allParked;
-		for( ; it != player.Ships().end(); ++it)
-			if(!(*it)->IsDisabled())
-				player.ParkShip(it->get(), !allParked);
+		for(const auto &it : player.Ships())
+			if(!it->IsDisabled() && (allParked || it.get() != flagship))
+				player.ParkShip(it.get(), !allParked);
 	}
 	else if(command.Has(Command::INFO | Command::MAP) || key == 'm')
 		GetUI()->Push(new MissionPanel(player));
@@ -321,6 +325,15 @@ bool InfoPanel::Release(int x, int y)
 
 
 
+bool InfoPanel::Scroll(int dx, int dy)
+{
+	if(!showShip)
+		scroll = max(0, min(static_cast<int>(player.Ships().size() - 25), scroll - 4 * dy));
+	return true;
+}
+
+
+
 void InfoPanel::UpdateInfo()
 {
 	selected = -1;
@@ -402,14 +415,17 @@ void InfoPanel::DrawInfo() const
 	int lastIndex = player.Ships().size() - 1;
 	
 	pos.Y() += 5.;
-	int index = 0;
-	for(const shared_ptr<Ship> &ship : player.Ships())
+	int index = scroll;
+	auto sit = player.Ships().begin() + scroll;
+	for( ; sit < player.Ships().end(); ++sit)
 	{
+		const shared_ptr<Ship> &ship = *sit;
 		pos.Y() += 20.;
 		if(pos.Y() >= 250.)
 			break;
 		
 		bool isElsewhere = (ship->GetSystem() != player.GetSystem());
+		isElsewhere |= (ship->CanBeCarried() && player.GetSystem());
 		bool isDead = ship->IsDestroyed() || ship->IsDisabled();
 		bool isHovered = (index == hover);
 		const Color &color = isDead ? dead : isElsewhere ? elsewhere : isHovered ? bright : dim;

@@ -44,15 +44,21 @@ void Sound::Load(const string &path)
 	isLooped = path[path.length() - 5] == '~';
 	
 	FILE *in = Files::Open(path);
+	if(!in)
+		return;
 	uint32_t frequency = 0;
 	uint32_t bytes = ReadHeader(in, frequency);
 	if(bytes)
 	{
 		vector<char> data(bytes);
 		if(fread(&data[0], 1, bytes, in) != bytes)
+		{
+			fclose(in);
 			return;
+		}
 		
-		alGenBuffers(1, &buffer);
+		if(!buffer)
+			alGenBuffers(1, &buffer);
 		alBufferData(buffer, AL_FORMAT_MONO16, &data.front(), bytes, frequency);
 	}
 	fclose(in);

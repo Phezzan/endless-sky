@@ -58,7 +58,7 @@ void EscortDisplay::Draw() const
 	if (!icons.size())
 		return;
 	MergeStacks();
-	//sort(icons.begin(), icons.end());
+	icons.sort();
 	
 	// Draw escort status.
 	double const escortWidth = Screen::Width()/(4 * columns);
@@ -222,7 +222,7 @@ void EscortDisplay::MergeStacks() const
 			break;
 		
 		// Merge all other instances of this ship's sprite with this icon.
-		vector<Icon>::iterator it = icons.begin();
+		list<Icon>::iterator it = icons.begin();
 		while(it != icons.end())
 		{
 			if(&*it == cheapest || it->sprite != cheapest->sprite || it->isHere != cheapest->isHere)

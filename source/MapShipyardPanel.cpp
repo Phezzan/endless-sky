@@ -38,6 +38,9 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include "System.h"
 #include "UI.h"
 
+#include <algorithm>
+#include <set>
+
 using namespace std;
 
 namespace {
@@ -135,6 +138,46 @@ bool MapShipyardPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &comma
 		GetUI()->Pop(this);
 		GetUI()->Push(new MapDetailPanel(*this));
 	}
+	else if((key == SDLK_DOWN || key == SDLK_UP) && !zones.empty())
+	{
+		// First, find the currently selected item, if any
+		auto it = zones.begin();
+		if(!selected)
+		{
+			if(key == SDLK_DOWN)
+				it = --zones.end();
+		}
+		else
+		{
+			for( ; it != zones.end() - 1; ++it)
+				if(it->Value() == selected)
+					break;
+		}
+		if(key == SDLK_DOWN)
+		{
+			++it;
+			if(it == zones.end())
+				it = zones.begin();
+		}
+		else
+		{
+			if(it == zones.begin())
+				it = zones.end();
+			--it;
+		}
+		double top = (it->Center() - it->Size()).Y();
+		double bottom = (it->Center() + it->Size()).Y();
+		if(bottom > Screen::Bottom())
+			scroll += Screen::Bottom() - bottom;
+		if(top < Screen::Top())
+			scroll += Screen::Top() - top;
+		selected = it->Value();
+	}
+	else if(key == SDLK_PAGEUP || key == SDLK_PAGEDOWN)
+	{
+		scroll += (Screen::Height() - 100) * ((key == SDLK_PAGEUP) - (key == SDLK_PAGEDOWN));
+		scroll = min(0, max(-maxScroll, scroll));
+	}
 	else
 		return false;
 	
@@ -227,10 +270,19 @@ double MapShipyardPanel::SystemValue(const System *system) const
 void MapShipyardPanel::Init()
 {
 	catalog.clear();
+	set<const Ship *> seen;
 	for(const auto &it : GameData::Planets())
 		if(player.HasVisited(it.second.GetSystem()))
 			for(const Ship *ship : it.second.Shipyard())
-				catalog[ship->Attributes().Category()].insert(ship);
+				if(seen.find(ship) == seen.end())
+				{
+					catalog[ship->Attributes().Category()].push_back(ship);
+					seen.insert(ship);
+				}
+	
+	for(auto &it : catalog)
+		sort(it.second.begin(), it.second.end(),
+			[](const Ship *a, const Ship *b) {return a->ModelName() < b->ModelName();});
 }
 
 
@@ -304,8 +356,6 @@ void MapShipyardPanel::DrawItems() const
 					SpriteShader::Draw(sprite, corner + iconOffset, scale, swizzle);
 				}
 				
-				zones.emplace_back(corner + .5 * blockSize, blockSize, ship);
-				
 				bool isForSale = true;
 				if(selectedSystem)
 				{
@@ -325,6 +375,7 @@ void MapShipyardPanel::DrawItems() const
 				shields += Format::Number(ship->Attributes().Get("hull")) + " hull";
 				font.Draw(shields, corner + shieldsOffset, color);
 			}
+			zones.emplace_back(corner + .5 * blockSize, blockSize, ship);
 			corner += Point(0., ICON_HEIGHT);
 		}
 	}

@@ -55,6 +55,13 @@ void Ship::Load(const DataNode &node)
 	
 	// Note: I do not clear the attributes list here so that it is permissible
 	// to override one ship definition with another.
+	bool hasEngine = false;
+	bool hasArmament = false;
+	bool hasLicenses = false;
+	bool hasBays = false;
+	bool hasExplode = false;
+	bool hasOutfits = false;
+	bool hasDescription = false;
 	for(const DataNode &child : node)
 	{
 		if(child.Token(0) == "sprite")
@@ -64,57 +71,87 @@ void Ship::Load(const DataNode &node)
 		else if(child.Token(0) == "attributes")
 			baseAttributes.Load(child);
 		else if(child.Token(0) == "engine" && child.Size() >= 3)
-			enginePoints.emplace_back(child.Value(1), child.Value(2));
-		else if((child.Token(0) == "gun" || child.Token(0) == "turret") && child.Size() >= 3)
 		{
-			Point hardpoint(child.Value(1), child.Value(2));
-			const Outfit *outfit = nullptr;
-			if(child.Size() >= 4)
+			if(!hasEngine)
 			{
-				outfit = GameData::Outfits().Get(child.Token(3));
-				++equipped[outfit];
+				enginePoints.clear();
+				hasEngine = true;
 			}
+			enginePoints.emplace_back(child.Value(1), child.Value(2));
+		}
+		else if(child.Token(0) == "gun" || child.Token(0) == "turret")
+		{
+			if(!hasArmament)
+			{
+				armament = Armament();
+				hasArmament = true;
+			}
+			const Outfit *outfit = nullptr;
+			Point hardpoint;
+			if(child.Size() >= 3)
+			{
+				hardpoint = Point(child.Value(1), child.Value(2));
+				if(child.Size() >= 4)
+					outfit = GameData::Outfits().Get(child.Token(3));
+			}
+			else
+			{
+				if(child.Size() >= 2)
+					outfit = GameData::Outfits().Get(child.Token(1));
+			}
+			if(outfit)
+				++equipped[outfit];
 			if(child.Token(0) == "gun")
 				armament.AddGunPort(hardpoint, outfit);
 			else
 				armament.AddTurret(hardpoint, outfit);
 		}
-		else if(child.Token(0) == "gun" || child.Token(0) == "turret")
-		{
-			const Outfit *outfit = nullptr;
-			if(child.Size() >= 2)
-			{
-				outfit = GameData::Outfits().Get(child.Token(1));
-				++equipped[outfit];
-			}
-			if(child.Token(0) == "gun")
-				armament.AddGunPort(Point(), outfit);
-			else
-				armament.AddTurret(Point(), outfit);
-		}
 		else if(child.Token(0) == "licenses")
 		{
+			if(!hasLicenses)
+			{
+				licenses.clear();
+				hasLicenses = true;
+			}
 			for(const DataNode &grand : child)
 				licenses.push_back(grand.Token(0));
 		}
 		else if(child.Token(0) == "never disabled")
 			neverDisabled = true;
-		else if(child.Token(0) == "fighter" && child.Size() >= 3)
-			fighterBays.emplace_back(child.Value(1), child.Value(2));
-		else if(child.Token(0) == "drone" && child.Size() >= 3)
-			droneBays.emplace_back(child.Value(1), child.Value(2));
+		else if((child.Token(0) == "fighter" || child.Token(0) == "drone") && child.Size() >= 3)
+		{
+			if(!hasBays)
+			{
+				fighterBays.clear();
+				droneBays.clear();
+				hasBays = true;
+			}
+			vector<Bay> &bays = (child.Token(0) == "fighter" ? fighterBays : droneBays);
+			bays.emplace_back(child.Value(1), child.Value(2));
+		}
 		else if(child.Token(0) == "explode" && child.Size() >= 2)
 		{
+			if(!hasExplode)
+			{
+				explosionEffects.clear();
+				explosionTotal = 0;
+				hasExplode = true;
+			}
 			int count = (child.Size() >= 3) ? child.Value(2) : 1;
 			explosionEffects[GameData::Effects().Get(child.Token(1))] += count;
 			explosionTotal += count;
 		}
 		else if(child.Token(0) == "outfits")
 		{
+			if(!hasOutfits)
+			{
+				outfits.clear();
+				hasOutfits = true;
+			}
 			for(const DataNode &grand : child)
 			{
 				int count = (grand.Size() >= 2) ? grand.Value(1) : 1;
-				this->outfits[GameData::Outfits().Get(grand.Token(0))] += count;
+				outfits[GameData::Outfits().Get(grand.Token(0))] += count;
 			}
 		}
 		else if(child.Token(0) == "cargo")
@@ -142,6 +179,11 @@ void Ship::Load(const DataNode &node)
 			isParked = true;
 		else if(child.Token(0) == "description" && child.Size() >= 2)
 		{
+			if(!hasDescription)
+			{
+				description.clear();
+				hasDescription = true;
+			}
 			description += child.Token(1);
 			description += '\n';
 		}
@@ -413,7 +455,10 @@ void Ship::Place(Point position, Point velocity, Angle angle)
 	this->angle = angle;
 	// If landed, place the ship right above the planet.
 	if(landingPlanet)
+	{
 		landingPlanet = nullptr;
+		zoom = parent.lock() ? -1. : 0.;
+	}
 	else
 		zoom = 1.;
 	forget = 1;
@@ -442,7 +487,7 @@ void Ship::SetSystem(const System *system)
 void Ship::SetPlanet(const Planet *planet)
 {
 	// Escorts should take off a bit behind their flagships.
-	zoom = parent.lock() ? -1. : 0.;
+	zoom = 0.;
 	landingPlanet = planet;
 	SetDestination(nullptr);
 }
@@ -1626,7 +1671,6 @@ double Ship::TransferFuel(double amount, Ship *to)
 	fuel -= amount;
 	return amount;
 }
-
 
 
 void Ship::CapturedBy(const shared_ptr<Ship> &capturer)

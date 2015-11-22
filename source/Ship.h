@@ -53,7 +53,7 @@ public:
 	void FinishLoading();
 	// Save a full description of this ship, as currently configured.
 	void Save(DataWriter &out) const;
-	
+
 	// Get information on this particular ship, for displaying it.
 	const Animation &GetSprite() const;
 	// Get the ship's government.
@@ -62,7 +62,7 @@ public:
 	double Zoom() const;
 	// Get the name of this particular ship.
 	const std::string &Name() const;
-	
+
 	// Get the name of this model of ship.
 	const std::string &ModelName() const;
 	// Get this ship's description.
@@ -71,7 +71,7 @@ public:
 	int64_t Cost() const;
 	// Get the licenses needed to buy or operate this ship.
 	const std::vector<std::string> &Licenses() const;
-	
+
 	// When creating a new ship, you must set the following:
 	void Place(Point position = Point(), Point velocity = Point(), Angle angle = Angle());
 	void SetName(const std::string &name);
@@ -80,14 +80,14 @@ public:
 	void SetGovernment(const Government *government);
 	void SetIsSpecial(bool special = true);
 	bool IsSpecial() const;
-	
+
 	// If a ship belongs to the player, the player can give it commands.
 	void SetIsYours(bool yours = true);
 	bool IsYours() const;
 	// A parked ship stays on a planet and requires no daily salary payments.
 	void SetIsParked(bool parked = true);
 	bool IsParked() const;
-	
+
 	// Access the ship's personality, which affects how the AI behaves.
 	const Personality &GetPersonality() const;
 	void SetPersonality(const Personality &other);
@@ -95,7 +95,7 @@ public:
 	// object is given the government's default will be used.
 	void SetHail(const Phrase &phrase);
 	std::string GetHail() const;
-	
+
 	// Set the commands for this ship to follow this timestep.
 	void SetCommands(const Command &command);
 	const Command &Commands() const;
@@ -112,19 +112,19 @@ public:
 	// Scan the target, if able and commanded to. Return a ShipEvent bitmask
 	// giving the types of scan that succeeded.
 	int Scan() const;
-	
+
 	// Fire any weapons that are ready to fire. If an anti-missile is ready,
 	// instead of firing here this function returns true and it can be fired if
 	// collision detection finds a missile in range.
 	bool Fire(std::list<Projectile> &projectiles, std::list<Effect> &effects);
 	// Fire an anti-missile. Returns true if the missile was killed.
 	bool FireAntiMissile(const Projectile &projectile, std::list<Effect> &effects);
-	
+
 	// Get the system this ship is in.
 	const System *GetSystem() const;
 	// If the ship is landed, get the planet it has landed on.
 	const Planet *GetPlanet() const;
-	
+
 	// Check the status of this ship.
 	unsigned IsDisabled(unsigned flags) const;
 	unsigned IsDisabled() const;
@@ -145,19 +145,19 @@ public:
 	int CheckHyperspace() const;
 	// Check what type of hyperspce jump this ship is making (0 = not allowed,
 	unsigned HyperspaceType() const;
-	
+
 	// Check if the ship is thrusting. If so, the engine sound should be played.
 	bool IsThrusting() const;
 	// Get the points from which engine flares should be drawn.
 	const std::vector<Point> &EnginePoints() const;
-	
+
 	// Get the position, velocity, and heading of this ship.
 	const Point &Position() const;
 	const Point &Velocity() const;
 	const Angle &Facing() const;
 	// Get the facing unit vector times the zoom factor.
 	Point Unit() const;
-	
+
 	// Mark a ship as destroyed, or bring back a destroyed ship.
 	void Destroy();
 	void Restore();
@@ -171,7 +171,8 @@ public:
 	double TransferFuel(double amount, Ship *to);
 	// restore basic function. Potentially change ownership
 	void CapturedBy(const std::shared_ptr<Ship> &capturer);
-	
+	inline void WasCaptured(const std::shared_ptr<Ship> &capturer){ CapturedBy(capturer);}
+
 	// Get characteristics of this ship, as a fraction between 0 and 1.
 	double Shields() const;
 	double Hull() const;
@@ -239,18 +240,18 @@ public:
 	};
 	int JumpFuel() const;
 	int Strength() const;
-	
+
 	// Access how many crew members this ship has or needs.
 	int Crew() const;
 	int RequiredCrew() const;
 	void AddCrew(int count);
-	
+
 	// Get this ship's movement characteristics.
 	double Mass() const;
 	double TurnRate() const;
 	double Acceleration() const;
 	double MaxVelocity() const;
-	
+
 	// This ship just got hit by the given projectile. Take damage according to
 	// what sort of weapon the projectile it. The return value is a ShipEvent
 	// type, which may be a combination of PROVOKED, DISABLED, and DESTROYED.
@@ -260,7 +261,7 @@ public:
 	// Apply a force to this ship, accelerating it. This might be from a weapon
 	// impact, or from firing a weapon, for example.
 	void ApplyForce(const Point &force);
-	
+
 	// Check if this ship has fighter or drone bays.
 	bool HasBays() const;
 	// Check how many fighter and drone bays are not occupied at present. This
@@ -280,11 +281,11 @@ public:
 	void UnloadFighters();
 	// Get a list of any ships this ship is carrying.
 	std::vector<std::shared_ptr<Ship>> CarriedShips() const;
-	
+
 	// Get cargo information.
 	CargoHold &Cargo();
 	const CargoHold &Cargo() const;
-	
+
 	// Get the current attributes of this ship.
 	const Outfit &Attributes() const;
 	// Get the attributes of this ship chassis before any outfits were added.
@@ -295,7 +296,7 @@ public:
 	int OutfitCount(const Outfit *outfit) const;
 	// Add or remove outfits. (To remove, pass a negative number.)
 	void AddOutfit(const Outfit *outfit, int count);
-	
+
 	// Get the list of weapons.
 	Armament &GetArmament();
 	const std::vector<Armament::Weapon> &Weapons() const;
@@ -308,7 +309,7 @@ public:
 
 	inline double MinRange() const {return armament.MinRange();}
 	inline double MaxRange() const {return armament.MaxRange();}
-	
+
 	// Each ship can have a target system (to travel to), a target planet (to
 	// land on) and a target ship (to move to, and attack if hostile).
 	std::shared_ptr<Ship> GetTargetShip() const;
@@ -318,7 +319,7 @@ public:
 	const StellarObject *GetTargetPlanet() const;
 	const System *GetTargetSystem() const;
 	const Planet *GetDestination() const;
-	
+
 	// Set this ship's targets.
 	void SetTargetShip(const std::shared_ptr<Ship> &ship);
 	void SetShipToAssist(const std::shared_ptr<Ship> &ship);
@@ -327,15 +328,15 @@ public:
 	void SetTargetPlanet(const StellarObject *object);
 	void SetTargetSystem(const System *system);
 	void SetDestination(const Planet *planet);
-	
+
 	// Manage escorts. When you set this ship's parent, it will automatically
 	// register itself as an escort of that ship, and unregister itself from any
 	// previous parent it had.
 	void SetParent(const std::shared_ptr<Ship> &ship);
 	std::shared_ptr<Ship> GetParent() const;
 	const std::vector<std::weak_ptr<const Ship>> &GetEscorts() const;
-	
-	
+
+
 private:
 	// Add or remove a ship from this ship's list of escorts.
 	void AddEscort(const Ship &ship);
@@ -354,19 +355,19 @@ private:
 	// Update the strength value (for AI use) - called 2x per second by Move()
 	int UpdateStrength() const;
 	void Initialize();
-	
+
 private:
 	class Bay {
 	public:
 		Bay() = default;
 		Bay(double x, double y) : point(x * .5, y * .5) {}
 		Bay(const Point &point) : point(point) {}
-		
+
 		Point point;
 		std::shared_ptr<Ship> ship;
 	};
-	
-	
+
+
 private:
 	// Characteristics of the chassis:
 	const Ship *base = nullptr;
@@ -376,10 +377,10 @@ private:
 	// Characteristics of this particular ship:
 	std::string name;
 	const Government *government = nullptr;
-	
+
 	// Licenses needed to operate this ship.
 	std::vector<std::string> licenses;
-	
+
 	int forget = 0;
 	bool isInSystem = true;
 	// "Special" ships cannot be forgotten, and if they land on a planet, they
@@ -393,28 +394,28 @@ private:
 	bool hasBoarded = false;
 	bool neverDisabled = false;
 	double cloak = 0.;
-	
+
 	Command commands;
-	
+
 	Personality personality;
 	const Phrase *hail = nullptr;
-	
+
 	// Installed outfits, cargo, etc.:
 	Outfit attributes;
 	Outfit baseAttributes;
 	const Outfit *explosionWeapon = nullptr;
 	std::map<const Outfit *, int> outfits;
 	CargoHold cargo;
-	
+
 	std::vector<Bay> droneBays;
 	std::vector<Bay> fighterBays;
-	
+
 	std::vector<Point> enginePoints;
 	Armament armament;
 	// While loading, keep track of which outfits already have been equipped.
 	// (That is, they were specified as linked to a given gun or turret point.)
 	std::map<const Outfit *, int> equipped;
-	
+
 	// Various energy levels:
 	double shields = 0.;
 	double hull = 0.;
@@ -427,32 +428,32 @@ private:
 	mutable int jumpCost=-1;
 	mutable int strength=-1;
 	mutable unsigned minimumHull=0;
-	
+
 	int crew = 0;
 	int pilotCheck = 0;
-	
+
 	// Current status of this particular ship:
 	const System *currentSystem = nullptr;
 	Point position;
 	Point velocity;
 	Angle angle;
-	
+
 	// A Ship can be locked into one of three special states: landing,
 	// hyperspacing, and exploding. Each one must track some special counters:
 	double zoom = 1.;
 	const Planet *landingPlanet = nullptr;
-	
+
 	int hyperspaceCount = 0;
 	int hyperspaceType = 0;
 	const System *hyperspaceSystem = nullptr;
 	Point hyperspaceOffset;
-	
+
 	std::map<const Effect *, int> explosionEffects;
 	unsigned queueExplosion= 0;
 	unsigned explosionRate = 0;
 	unsigned explosionCount = 0;
 	unsigned explosionTotal = 0;
-	
+
 	// Target ships, planets, systems, etc.
 	std::weak_ptr<Ship> targetShip;
 	std::weak_ptr<Ship> shipToAssist;
@@ -460,7 +461,7 @@ private:
 	const StellarObject *targetPlanet = nullptr;
 	const System *targetSystem = nullptr;
 	const Planet *destination = nullptr;
-	
+
 	// Links between escorts and parents.
 	std::vector<std::weak_ptr<const Ship>> escorts;
 	std::weak_ptr<Ship> parent;

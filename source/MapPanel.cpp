@@ -51,15 +51,16 @@ namespace {
 
 MapPanel::MapPanel(PlayerInfo &player, int commodity, const System *special)
 	: player(player), distance(player),
-	playerSystem(player.Flagship()->GetSystem()),
-	selectedSystem(special ? special : player.Flagship()->GetSystem()),
+	playerSystem(player.GetSystem()),
+	selectedSystem(special ? special : player.GetSystem()),
 	specialSystem(special),
 	commodity(commodity)
 {
 	SetIsFullScreen(true);
 	SetInterruptible(false);
 	
-	center = Point(0., 0.) - selectedSystem->Position();
+	if(selectedSystem)
+		center = Point(0., 0.) - selectedSystem->Position();
 }
 
 
@@ -82,9 +83,9 @@ void MapPanel::Draw() const
 	
 	// Draw the "visible range" circle around your current location.
 	Color dimColor(.1, 0.);
-	DotShader::Draw(playerSystem->Position() + center, 100.5, 99.5, dimColor);
+	DotShader::Draw((playerSystem ? playerSystem->Position() + center : center), 100.5, 99.5, dimColor);
 	Color brightColor(.4, 0.);
-	DotShader::Draw(selectedSystem->Position() + center, 11., 9., brightColor);
+	DotShader::Draw((selectedSystem ? selectedSystem->Position() + center : center), 11., 9., brightColor);
 	
 	DrawLinks();
 	DrawSystems();
@@ -163,7 +164,7 @@ void MapPanel::Select(const System *system)
 			for(const System *it : oldPath)
 				player.AddTravel(it);
 		}
-		else
+		else if(playerSystem)
 		{
 			player.ClearTravel();
 			while(system != playerSystem)
@@ -200,26 +201,56 @@ const Planet *MapPanel::Find(const string &name)
 
 void MapPanel::DrawTravelPlan() const
 {
-	Color color(.4, .4, 0., 0.);
+	Color defaultColor(.5, .4, 0., 0.);
+	Color outOfFlagshipFuelRangeColor(.55, .1, .0, 0.);
+	Color withinFleetFuelRangeColor(.2, .5, .0, 0.);
 	
 	Ship *ship = player.Flagship();
 	bool hasHyper = ship ? ship->Attributes().Get("hyperdrive") : false;
 	bool hasJump = ship ? ship->Attributes().Get("jump drive") : false;
 	
+	// Find out how much fuel your ship and your escorts use per jump.
+	double flagshipCapacity = 0.;
+	if(ship)
+		flagshipCapacity = ship->Attributes().Get("fuel capacity") * ship->Fuel();
+	double flagshipJumpFuel = 0.;
+	if(ship)
+		flagshipJumpFuel = hasHyper ? ship->Attributes().Get("scram drive") ? 150. : 100. : 200.;
+	double escortCapacity = 0.;
+	double escortJumpFuel = 1.;
+	bool escortHasJump = false;
+	// Skip your flagship, parked ships, and fighters.
+	for(const shared_ptr<Ship> &it : player.Ships())
+		if(it.get() != ship && !it->IsParked() && !it->CanBeCarried())
+		{
+			double capacity = it->Attributes().Get("fuel capacity") * it->Fuel();
+			double jumpFuel = it->Attributes().Get("hyperdrive") ?
+				it->Attributes().Get("scram drive") ? 150. : 100. : 200.;
+			if(escortJumpFuel < 100. || capacity / jumpFuel < escortCapacity / escortJumpFuel)
+			{
+				escortCapacity = capacity;
+				escortJumpFuel = jumpFuel;
+				escortHasJump = it->Attributes().Get("jump drive");
+			}
+		}
+	
 	// Draw your current travel plan.
+	if(!playerSystem)
+		return;
 	const System *previous = playerSystem;
 	for(int i = player.TravelPlan().size() - 1; i >= 0; --i)
 	{
 		const System *next = player.TravelPlan()[i];
 		
-		bool hasLink = false;
-		if(hasHyper)
-			hasLink |= (find(previous->Links().begin(), previous->Links().end(), next)
+		// Figure out what kind of jump this is, and check if the player is able
+		// to make jumps of that kind.
+		bool isHyper = 
+			(find(previous->Links().begin(), previous->Links().end(), next)
 				!= previous->Links().end());
-		if(hasJump)
-			hasLink |= (find(previous->Neighbors().begin(), previous->Neighbors().end(), next)
+		bool isJump = isHyper ||
+			(find(previous->Neighbors().begin(), previous->Neighbors().end(), next)
 				!= previous->Neighbors().end());
-		if(!hasLink)
+		if(!((isHyper && hasHyper) || (isJump && hasJump)))
 			break;
 		
 		Point from = next->Position() + center;
@@ -228,7 +259,26 @@ void MapPanel::DrawTravelPlan() const
 		from -= unit;
 		to += unit;
 		
-		LineShader::Draw(from, to, 3., color);
+		if(!isHyper)
+		{
+			if(!escortHasJump)
+				escortCapacity = 0.;
+			flagshipCapacity -= 200.;
+			escortCapacity -= 200.;
+		}
+		else
+		{
+			flagshipCapacity -= flagshipJumpFuel;
+			escortCapacity -= escortJumpFuel;
+		}
+		
+		Color drawColor = outOfFlagshipFuelRangeColor;
+		if(flagshipCapacity >= 0. && escortCapacity >= 0.)
+			drawColor = withinFleetFuelRangeColor;
+		else if(flagshipCapacity >= 0. || escortCapacity >= 0.)
+			drawColor = defaultColor;
+        
+		LineShader::Draw(from, to, 3., drawColor);
 		
 		previous = next;
 	}
