@@ -134,10 +134,10 @@ void BoardingPanel::Draw() const
 			Round(defenseOdds.DefenderPower(crew)));
 	}
 	int vCrew = victim->Crew();
-	info.SetString("enemy crew", to_string(vCrew));
-	info.SetString("enemy attack",
+	info.SetString("victim crew", to_string(vCrew));
+	info.SetString("victim attack",
 		Round(defenseOdds.AttackerPower(vCrew)));
-	info.SetString("enemy defense",
+	info.SetString("victim defense",
 		Round(attackOdds.DefenderPower(vCrew)));
 	
 	info.SetString("attack odds",
@@ -211,13 +211,13 @@ bool BoardingPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command)
 	else if((key == 'a' || key == 'd') && CanAttack())
 	{
 		int yourStartCrew = you->Crew();
-		int enemyStartCrew = victim->Crew();
+		int victimStartCrew = victim->Crew();
 		
 		// Figure out what action the other ship will take.
 		bool youAttack = (key == 'a' && yourStartCrew > 1);
-		bool enemyAttacks = defenseOdds.Odds(enemyStartCrew, yourStartCrew) > .5;
+		bool victimAttacks = defenseOdds.Odds(victimStartCrew, yourStartCrew) > 0.4 + (0.2 * Random::Real());
 		
-		if(!youAttack && !enemyAttacks)
+		if(!youAttack && !victimAttacks)
 		{
 			messages.push_back("You retreat to your ships. Combat ends.");
 			isCapturing = false;
@@ -226,23 +226,23 @@ bool BoardingPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command)
 		{
 			if(youAttack)
 				messages.push_back("You attack. ");
-			else if(enemyAttacks)
+			else if(victimAttacks)
 				messages.push_back("You defend. ");
 			
 			int rounds = max(1, yourStartCrew / 5);
 			for(int round = 0; round < rounds; ++round)
 			{
 				int yourCrew = you->Crew();
-				int enemyCrew = victim->Crew();
-				if(!yourCrew || !enemyCrew)
+				int victimCrew = victim->Crew();
+				if(!yourCrew || !victimCrew)
 					break;
 				
 				unsigned yourPower = static_cast<unsigned>(1000. * (youAttack ?
 					attackOdds.AttackerPower(yourCrew) : defenseOdds.DefenderPower(yourCrew)));
-				unsigned enemyPower = static_cast<unsigned>(1000. * (enemyAttacks ?
-					defenseOdds.AttackerPower(enemyCrew) : attackOdds.DefenderPower(enemyCrew)));
+				unsigned victimPower = static_cast<unsigned>(1000. * (victimAttacks ?
+					defenseOdds.AttackerPower(victimCrew) : attackOdds.DefenderPower(victimCrew)));
 				
-				unsigned total = yourPower + enemyPower;
+				unsigned total = yourPower + victimPower;
 				if(!total)
 					break;
 				
@@ -253,19 +253,19 @@ bool BoardingPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command)
 			}
 			
 			int yourCasualties = yourStartCrew - you->Crew();
-			int enemyCasualties = enemyStartCrew - victim->Crew();
-			if(yourCasualties && enemyCasualties)
+			int victimCasualties = victimStartCrew - victim->Crew();
+			if(yourCasualties && victimCasualties)
 				messages.back() += "You lose " + to_string(yourCasualties)
-					+ " crew; they lose " + to_string(enemyCasualties) + ".";
+					+ " crew; they lose " + to_string(victimCasualties) + ".";
 			else if(yourCasualties)
 				messages.back() += "You lose " + to_string(yourCasualties) + " crew.";
-			else if(enemyCasualties)
-				messages.back() += "They lose " + to_string(enemyCasualties) + " crew.";
+			else if(victimCasualties)
+				messages.back() += "They lose " + to_string(victimCasualties) + " crew.";
 			
 			if(!you->Crew())
 			{
 				messages.push_back("You have been killed. Your ship is lost.");
-				player.Ships().front()->WasCaptured(victim);
+				player.Ships().front()->CapturedBy(victim);
 				playerDied = true;
 				isCapturing = false;
 			}
@@ -273,7 +273,7 @@ bool BoardingPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command)
 			{
 				casualties = initialCrew - you->Crew();
 				messages.push_back("You have succeeded in capturing this ship.");
-				victim->WasCaptured(player.Ships().front());
+				victim->CapturedBy(player.Ships().front());
 				if(!victim->JumpsRemaining() && you->CanRefuel(*victim))
 					you->TransferFuel(victim->JumpFuel(), &*victim);
 				player.AddShip(victim);

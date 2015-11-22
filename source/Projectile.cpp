@@ -304,9 +304,14 @@ const Ship *Projectile::Target() const
 }
 
 
-
 // Find out which government this projectile belongs to.
 const Government *Projectile::GetGovernment() const
 {
 	return government;
+}
+
+// return True if g is our enemy
+bool Projectile::IsEnemy(Government const * const g) const
+{
+	return government && government->IsEnemy(g);
 }

@@ -494,7 +494,7 @@ void Engine::Draw() const
 
     static const Color ShieldColor  = *GameData::Colors().Get("shields");
     static const Color HullColor    = *GameData::Colors().Get("hull");
-    static const Color EnemyColor   = *GameData::Colors().Get("enemy");
+    //static const Color EnemyColor   = *GameData::Colors().Get("enemy");
     static const Color AttackerColor= *GameData::Colors().Get("attacker");
 
 	for(const auto &it : statuses)
@@ -971,6 +971,7 @@ void Engine::CalculateStep()
 			
 			auto target = ship->GetTargetShip();
 			radar[calcTickTock].Add(
+				(flagship && ship == flagship->GetTargetShip()) ? Radar::SPECIAL :
 				(ship->GetGovernment()->IsPlayer() || ship->GetPersonality().IsEscort()) ? Radar::PLAYER :
 					(ship->IsDisabled() || ship->IsOverheated()) ? Radar::INACTIVE :
 					!ship->GetGovernment()->IsEnemy() ? Radar::FRIENDLY :

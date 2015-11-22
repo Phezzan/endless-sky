@@ -327,8 +327,17 @@ void Armament::FinishLoading()
 			weapon.Install(outfit);
 			// If this weapon is streamed, create a stream counter.
 			// Missiles and anti-missiles do not stream.
-			if(!outfit->MissileStrength() && !outfit->AntiMissile())
-				++streamReload[outfit];
+			if(!outfit->AntiMissile())
+			{
+				double const range = outfit->Range();
+				if (range < minRange || minRange < 0. )
+					minRange = range;
+				if (range > maxRange)
+					maxRange = range;
+
+				if(!outfit->MissileStrength())
+					++streamReload[outfit];
+			}
 		}
 }
 

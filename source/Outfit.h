@@ -66,6 +66,7 @@ public:
 	const std::map<const Sound *, int> &FlareSounds() const;
 	// Get the afterburner effect, if any.
 	const std::map<const Effect *, int> &AfterburnerEffects() const;
+	bool isSecure() const;
 	
 	
 private:
@@ -73,6 +74,7 @@ private:
 	std::string category;
 	std::string description;
 	const Sprite *thumbnail = nullptr;
+	bool secure = false;
 	
 	std::map<std::string, double> attributes;
 	

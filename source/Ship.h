@@ -126,9 +126,10 @@ public:
 	const Planet *GetPlanet() const;
 	
 	// Check the status of this ship.
+	unsigned IsDisabled(unsigned flags) const;
+	unsigned IsDisabled() const;
 	bool IsTargetable() const;
 	bool IsOverheated() const;
-	bool IsDisabled() const;
 	bool IsBoarding() const;
 	bool IsLanding() const;
 	// Check if this ship is currently able to begin landing on its target.
@@ -187,6 +188,7 @@ public:
 	// This depends on how much fuel it has and what sort of hyperdrive it uses.
 	int JumpsRemaining() const;
 	// Get the amount of fuel expended per jump.
+
 	enum {
 		NO_HYPERSPACE = 0,
 		HYPERDRIVE,
@@ -194,7 +196,46 @@ public:
 		JUMPDRIVE,
 		HYPERDRIVE_FUEL = 100,
 		SCRAMDRIVE_FUEL = 133,
-		JUMPDRIVE_FUEL = 150,
+		JUMPDRIVE_FUEL  = 150,
+
+		SYSDOWN_Disabled= 0x000b,		// Eng, Hull, Power are required to act
+		SYSDOWN_Hyper   = 0x000f,		// Eng, Hull, Power and FTL are required to enter hyperspace
+		SYSDOWN_CanBoard= 0x000a,		// Eng, and Hull - also require energy (!SYSDOWN(Power) || energy > 0.)
+
+		SYSDOWN_Core	= 0x00F7,
+		SYSDOWN_Power   = 0x0001,
+		SYSDOWN_Engine  = 0x0002,
+		SYSDOWN_FTL     = 0x0004,
+		SYSDOWN_Hull    = 0x0008,
+		SYSDOWN_Shield  = 0x0010,
+
+		SYSDOWN_Aux     = 0x0F00,
+		SYSDOWN_Cloak   = 0x0100,
+		SYSDOWN_Cooling = 0x0200,
+
+		SYSDOWN_Crew    = 0x00008000,
+
+		SYSDOWN_Damaged = 0x00007fFF,
+
+		SYSDOWN_Guns	= 0x00FF0000,
+		SYSDOWN_Gun1    = 0x00010000,
+		SYSDOWN_Gun2    = 0x00020000,
+		SYSDOWN_Gun3    = 0x00040000,
+		SYSDOWN_Gun4    = 0x00080000,
+		SYSDOWN_Gun5    = 0x00100000,
+		SYSDOWN_Gun6    = 0x00200000,
+		SYSDOWN_Gun7    = 0x00400000,
+		SYSDOWN_Gun8    = 0x00800000,
+
+		SYSDOWN_Turrets = 0xff000000,
+		SYSDOWN_Turret1 = 0x01000000,
+		SYSDOWN_Turret2 = 0x02000000,
+		SYSDOWN_Turret3 = 0x04000000,
+		SYSDOWN_Turret4 = 0x08000000,
+		SYSDOWN_Turret5 = 0x10000000,
+		SYSDOWN_Turret6 = 0x20000000,
+		SYSDOWN_Turret7 = 0x40000000,
+		SYSDOWN_Turret8 = 0x80000000,
 	};
 	int JumpFuel() const;
 	int Strength() const;
@@ -273,6 +314,7 @@ public:
 	std::shared_ptr<Ship> GetTargetShip() const;
 	std::shared_ptr<Ship> GetShipToAssist() const;
 	std::shared_ptr<Ship> GetBoarder() const;
+	bool  				  HasBoarder() const;
 	const StellarObject *GetTargetPlanet() const;
 	const System *GetTargetSystem() const;
 	const Planet *GetDestination() const;
@@ -280,7 +322,8 @@ public:
 	// Set this ship's targets.
 	void SetTargetShip(const std::shared_ptr<Ship> &ship);
 	void SetShipToAssist(const std::shared_ptr<Ship> &ship);
-	void SetBoarder(const std::shared_ptr<Ship> &ship);
+	bool SetBoarder(const std::weak_ptr<Ship> &ship);
+	void UnsetBoarder(const std::shared_ptr<Ship> &ship);
 	void SetTargetPlanet(const StellarObject *object);
 	void SetTargetSystem(const System *system);
 	void SetDestination(const Planet *planet);
@@ -306,7 +349,7 @@ private:
 	// either stay over the ship, or spread out if this is the final explosion.
 	void CreateExplosion(std::list<Effect> &effects, bool spread = false);
 
-	// Set or unset the isDisabled flag based on the ship's state
+	// update the disabled flags based on the ship's state
 	bool UpdateDisabled();
 	// Update the strength value (for AI use) - called 2x per second by Move()
 	int UpdateStrength() const;
@@ -345,7 +388,7 @@ private:
 	bool isYours = false;
 	bool isParked = false;
 	bool isOverheated = false;
-	bool isDisabled = false;
+	unsigned isDisabled = 0;
 	bool isBoarding = false;
 	bool hasBoarded = false;
 	bool neverDisabled = false;
@@ -405,6 +448,7 @@ private:
 	Point hyperspaceOffset;
 	
 	std::map<const Effect *, int> explosionEffects;
+	unsigned queueExplosion= 0;
 	unsigned explosionRate = 0;
 	unsigned explosionCount = 0;
 	unsigned explosionTotal = 0;

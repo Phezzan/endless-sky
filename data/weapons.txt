@@ -272,14 +272,14 @@ outfit "Anti-Missile Turret"
 	category "Turrets"
 	cost 60000
 	thumbnail "outfit/anti-missile"
-	"mass" 16
-	"outfit space" -16
-	"weapon capacity" -16
+	"mass" 15
+	"outfit space" -15
+	"weapon capacity" -15
 	"turret mounts" -1
 	weapon
 		"hit effect" "small anti-missile"
 		"anti-missile" 5
-		"velocity" 100
+		"velocity" 150
 		"lifetime" 1
 		"reload" 8
 		"firing energy" 5
@@ -291,16 +291,16 @@ outfit "Heavy Anti-Missile Turret"
 	cost 150000
 	thumbnail "outfit/heavy anti-missile"
 	"mass" 25
-	"outfit space" -28
-	"weapon capacity" -28
+	"outfit space" -27
+	"weapon capacity" -27
 	"turret mounts" -1
 	weapon
 		"hit effect" "large anti-missile"
-		"anti-missile" 8
-		"velocity" 200
+		"anti-missile" 9
+		"velocity" 300
 		"lifetime" 1
 		"reload" 6
-		"firing energy" 10
+		"firing energy" 9
 		"firing heat" 5
 	description "The Heavy Anti-Missile turret has a longer range, higher power, and shorter reload time than its smaller sibling. The only way to overcome it is by firing missiles in a cluster so that while one is being targeted, the others can get through, and as a result all missile systems on the market now default to firing in clusters if multiple copies of the same launcher are installed, rather than staggering their fire as ordinary guns do."
 
@@ -349,7 +349,7 @@ outfit "Proton Gun"
 		"firing energy" 15
 		"firing force" 2
 		"firing heat" 60
-	description "The Proton Gun started out as the Syndicate's attempt to reverse engineer and mass produce a cheap competitor for the Particle Cannon. Unfortunately, they were unable to find a reliable way to keep the beam coherent, but the resulting weapon is still popular with some captains, particularly as an anti-fighter gun."
+	description "The Proton Gun started out as the Syndicate's attempt to reverse engineer and mass produce a cheap competitor for the Particle Cannon. Unfortunately, they were unable to find a reliable way to keep the beam coherent, but the resulting weapon is still popular with some captains, particularly as an anti-fighter gun. It has very poor armor penetration."
 
 outfit "Proton Fragment"
 	weapon
@@ -408,7 +408,7 @@ outfit "Pulse Cannon"
 		"firing heat" 70
 		"shield damage" 45
 		"hull damage" 41
-		"armor penetration" -1
+		"armor penetration" -2
 	description "Like most examples of Hai engineering that you have seen, the Pulse Cannon does not stand out as a particularly advanced or elegant technology, but it has a reputation for being efficient, reliable, and well-balanced."
 
 outfit "Pulse Turret"
@@ -432,7 +432,7 @@ outfit "Pulse Turret"
 		"firing heat" 70
 		"shield damage" 45
 		"hull damage" 41
-		"armor penetration" -1
+		"armor penetration" -2
 	description "Pulse Cannons are the primary offensive weapon used by Hai ships. This turret mounts two pulse cannons side by side and allows them to track even the fastest-moving of targets."
 
 outfit "Ion Cannon"
@@ -458,7 +458,7 @@ outfit "Ion Cannon"
 		"shield damage" 168
 		"hull damage" 90
 		"ion damage" 5
-		"armor penetration" -1.5
+		"armor penetration" -4
 	description "Ion cannons do not do as much damage as some other weapons, but they disrupt the electrical systems on any ship they hit, draining its energy. If a ship has sizeable battery reserves, this may not have any effect, but for a ship running at near its energy generation capacity an ion strike can take it out of the battle for a few seconds while it recovers."
 
 outfit "Plasma Turret"
@@ -565,7 +565,7 @@ outfit "Meteor Missile Launcher"
 		"hull damage" 70
 		"hit force" 30
 		"missile strength" 4
-		"armor penetration" -9
+		"armor penetration" -7
 	description "The Meteor Missile is the cheapest and simplest homing weapon available in human space. The tracking system on these missiles is notoriously unreliable, and they are easily destroyed by anti-missile systems, but in large numbers or when fired at a slow-moving target they can be deadly."
 
 outfit "Sidewinder Missile"
@@ -605,16 +605,16 @@ outfit "Sidewinder Missile Launcher"
 		"turn" 3
 		"homing" 4
 		"shield damage" 80
-		"hull damage" 60
+		"hull damage" 62
 		"hit force" 25
 		"missile strength" 12
-		"armor penetration" -7
+		"armor penetration" -4
 	description "The Sidewinder Missile is designed by Lovelace Labs, which is ironically also the designed of the Anti-Missile Turret. Rumors say that the two engineering teams at Lovelace who make the missiles and the anti-missiles are locked in furious competition with each other: the result has been generation after generation of smarter missiles and then smarter turrets to fend them off."
-	description "	Although not as powerful or cheap as the popular Meteor missiles, Sidewinders have several advantages, including their better tracking systems and protective casings that make them much harder for anti-missile systems to destroy."
+	description "	Although not as powerful or cheap as the popular Meteor missiles, Sidewinders have several advantages. Better tracking, an armored casing, and a shaped warhead that improves armor penetration. Overall the Sidewinder outperforms Meteors against hardened targets."
 
 outfit "Javelin"
 	category "Ammunition"
-	cost 50
+	cost 35
 	thumbnail "outfit/javelin"
 	"javelin capacity" -1
 	description "A Javelin missile is ammunition for the Javelin Pod; without a Pod to store them in you cannot purchase or use Javelins. Each pod stores up to 200 Javelins."
@@ -645,7 +645,7 @@ outfit "Javelin Pod"
 		"hit force" 5
 		"missile strength" 2
 		"armor penetration" -4
-	description "The Javelin Pod fires a rapid stream of unguided missiles. A Javelin Pod does far more damage than any gun of a comparable size, and has a longer range as well, but once a ship has fired off all its ammunition it must leave combat and find a planet where it can buy more, which makes Javelins less useful in protracted battles. As a result, they are very popular with pirates as a way to quickly disable a small target."
+	description "The Javelin Pod fires a rapid stream of unguided missiles. A Javelin Pod does far more damage than any gun of a comparable size, and has a longer range as well, but once a ship has fired off all its ammunition it must leave combat and find a planet where it can buy more, which makes Javelins less useful in protracted battles. As a result, they are very popular with pirates as a way to quickly disable weak targets."
 
 outfit "Hai Tracker"
 	category "Ammunition"
@@ -658,9 +658,9 @@ outfit "Hai Tracker Pod"
 	category "Secondary Weapons"
 	cost 150000
 	thumbnail "outfit/hai tracker pod"
-	"mass" 19
-	"outfit space" -19
-	"weapon capacity" -19
+	"mass" 18
+	"outfit space" -18
+	"weapon capacity" -18
 	"gun ports" -1
 	"tracker capacity" 56
 	weapon
@@ -677,7 +677,7 @@ outfit "Hai Tracker Pod"
 		"inaccuracy" 20
 		"velocity" 14
 		"lifetime" 600
-		"reload" 60
+		"reload" 120
 		"firing energy" 45
 		"firing heat" 5
 		"acceleration" .7
@@ -688,7 +688,7 @@ outfit "Hai Tracker Pod"
 		"hull damage" 160
 		"hit force" 50
 		"missile strength" 16
-		"armor penetration" -9
+		"armor penetration" -11
 	description "Trackers are a fast, powerful, and accurate homing weapon. Their only weakness is their large turning radius: if a Tracker misses its target, it takes a long time to turn around."
 
 outfit "Torpedo"

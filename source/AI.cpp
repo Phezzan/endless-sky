@@ -436,7 +436,8 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 	// If this ship has no government, it has no enemies.
 	shared_ptr<Ship> target;
 	const Government *gov = ship.GetGovernment();
-	if(!gov || ship.GetPersonality().IsPacifist())
+	if(!gov || ship.GetPersonality().IsPacifist() || 
+		ship.GetPersonality().IsFleeing())
 		return target;
 	
 	bool isPlayerEscort = ship.IsYours();
@@ -446,11 +447,11 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 		if(locked && locked->GetSystem() == ship.GetSystem() && !locked->IsDisabled())
 			return locked;
 	}
-
+	
 
 	double minRange = ship.MinRange();
 	double maxRange = ship.MaxRange();
-	if(maxRange < 0.)
+	if(maxRange <= 1.)
 		return target;
 	
 	shared_ptr<Ship> oldTarget = ship.GetTargetShip();
@@ -519,7 +520,7 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 			}
 		}
 	}
-
+	
 	bool cargoScan = ship.Attributes().Get("cargo scan");
 	bool outfitScan = ship.Attributes().Get("outfit scan");
 	if(!target && (cargoScan || outfitScan) && !isPlayerEscort)
@@ -541,10 +542,11 @@ shared_ptr<Ship> AI::FindTarget(const Ship &ship, const list<shared_ptr<Ship>> &
 			}
 	}
 	
-	// Run away if your target is not disabled and you are badly damaged.
 	// Run away if your target is scary powerful. This makes 'trick' builds (like heat weapons) likely to run
-	if(target && !isDisabled && (ship.GetPersonality().IsFleeing() ||
-			(ship.Strength() * 2. < target->Strength() && !ship.GetPersonality().IsHeroic())))
+	if(target && !isDisabled && 
+		(ship.Strength() * 2. < target->Strength()
+		 && !ship.GetPersonality().IsHeroic())
+	  )
 		target.reset();
 	
 	return target;
@@ -975,9 +977,12 @@ void AI::Attack(Ship &ship, Command &command, const Ship &target)
 void AI::DoSurveillance(Ship &ship, Command &command, const list<shared_ptr<Ship>> &ships) const
 {
 	const shared_ptr<Ship> &target = ship.GetTargetShip();
-	if(target && (!target->IsTargetable() || target->GetSystem() != ship.GetSystem()))
+	if(!target || (!target->IsTargetable() || target->GetSystem() != ship.GetSystem()))
+	{
 		ship.SetTargetShip(shared_ptr<Ship>());
-	if(target && ship.GetGovernment()->IsEnemy(target->GetGovernment()))
+		return;
+	}
+	if(ship.GetGovernment()->IsEnemy(target->GetGovernment()))
 	{
 		MoveIndependent(ship, command);
 		command |= AutoFire(ship, ships);
@@ -986,9 +991,11 @@ void AI::DoSurveillance(Ship &ship, Command &command, const list<shared_ptr<Ship
 	
 	bool cargoScan = ship.Attributes().Get("cargo scan");
 	bool outfitScan = ship.Attributes().Get("outfit scan");
+	bool canScan = cargoScan || outfitScan;
 	double atmosphereScan = ship.Attributes().Get("atmosphere scan");
 	bool jumpDrive = ship.Attributes().Get("jump drive");
 	bool hyperdrive = ship.Attributes().Get("hyperdrive");
+	bool doScan = 50. > Random::Real() * ship.GetGovernment()->Reputation();// || !target->GetGovernment()->IsPlayer() ||
 	
 	// This function is only called for ships that are in the player's system.
 	if(ship.GetTargetSystem())
@@ -1006,8 +1013,7 @@ void AI::DoSurveillance(Ship &ship, Command &command, const list<shared_ptr<Ship
 		else
 			command |= Command::LAND;
 	}
-	else if(ship.GetTargetShip() && ship.GetTargetShip()->IsTargetable()
-			&& ship.GetTargetShip()->GetSystem() == ship.GetSystem())
+	else if(target && canScan && doScan)
 	{
 		bool mustScanCargo = cargoScan && !Has(ship, target, ShipEvent::SCAN_CARGO);
 		bool mustScanOutfits = outfitScan && !Has(ship, target, ShipEvent::SCAN_OUTFITS);
@@ -1088,9 +1094,9 @@ void AI::DoCloak(Ship &ship, Command &command, const list<shared_ptr<Ship>> &shi
 			if(fuel <= ship.JumpFuel())
 				return;
 		}
-		if(ship.Energy() < 0.5 && ship.Attributes().Get("cloaking energy"))
+		if(ship.Energy() < 0.3 && ship.Attributes().Get("cloaking energy"))
 		{
-			return;
+				return;
 		}
 		// Otherwise, always cloak if you are in imminent danger.
 		static const double MAX_RANGE = 10000.;

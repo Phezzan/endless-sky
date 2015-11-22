@@ -16,12 +16,12 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include "Angle.h"
 #include "Animation.h"
 #include "Point.h"
+#include "Government.h"
 
 #include <list>
 #include <memory>
 
 class Effect;
-class Government;
 class Outfit;
 class Ship;
 
@@ -78,6 +78,7 @@ public:
 	const Ship *Target() const;
 	// Find out which government this projectile belongs to.
 	const Government *GetGovernment() const;
+	bool              IsEnemy(const Government * const g) const;
 	
 	
 private:

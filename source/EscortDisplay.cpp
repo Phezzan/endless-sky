@@ -35,8 +35,6 @@ using namespace std;
 void EscortDisplay::Clear()
 {
 	icons.clear();
-	top = Screen::Top() + 450;
-	columns = 1;
 }
 
 
@@ -44,9 +42,12 @@ void EscortDisplay::Clear()
 void EscortDisplay::Add(const Ship &ship, bool isHere)
 {
 	icons.emplace_back(ship, isHere);
-	// todo update
-	top		= Screen::Top() + 650;
-	columns = (icons.size()/((Screen::Bottom() - top)/Icon::Height) < 2) ? 1 : 2;
+
+	unsigned const width  = Screen::Width() / 4;
+	unsigned const maxCol = max(1u, width / 70u);
+	iconsPerColumn = min(12u, (Screen::Bottom() - Screen::Top()-450) / 40u);
+	columns		   = max(1u, min(maxCol, static_cast<unsigned>(0.9 +
+				static_cast<double>(icons.size()) /	static_cast<double>(iconsPerColumn))));
 }
 
 
@@ -54,13 +55,16 @@ void EscortDisplay::Add(const Ship &ship, bool isHere)
 // all but the top 450 pixels of the screen.
 void EscortDisplay::Draw() const
 {
+	if (!icons.size())
+		return;
 	MergeStacks();
-	sort(icons.begin(), icons.end());
+	//sort(icons.begin(), icons.end());
 	
 	// Draw escort status.
-	const double escortWidth = Screen::Width()/(columns * 4.);
+	double const escortWidth = Screen::Width()/(4 * columns);
 	static const Font &font  = FontSet::Get(14);
-	Point pos 				 = Point(Screen::Left() + 17., Screen::Bottom() - 19.);
+	Point pos				 = Point(Screen::Left() + 20., Screen::Bottom() - 20.);
+	Point  const end		 = Point(Screen::Left() + escortWidth * columns, Screen::Top() + 450);
 	static const Color hereColor(.8, 1.);
 	static const Color elsewhereColor(.4, .4, .6, 1.);
 	static const Color readyToJumpColor(.2, .8, .2, 1.);
@@ -70,9 +74,11 @@ void EscortDisplay::Draw() const
 	static const Color energyColor = *GameData::Colors().Get("energy");
 	static const Color heatColor   = *GameData::Colors().Get("heat");
 	static const Color fuelColor   = *GameData::Colors().Get("fuel");
+	static const Color shield2Color = *GameData::Colors().Get("shields2");
+	static const Color hull2Color	= *GameData::Colors().Get("hull2");
 	static const Color energy2Color = *GameData::Colors().Get("energy2");
-	static const Color heat2Color   = *GameData::Colors().Get("heat2");
-	static const Color fuel2Color   = *GameData::Colors().Get("fuel2");
+	static const Color heat2Color	= *GameData::Colors().Get("heat2");
+	static const Color fuel2Color	= *GameData::Colors().Get("fuel2");
 	for(const Icon &escort : icons)
 	{
 		if(!escort.sprite)
@@ -102,19 +108,24 @@ void EscortDisplay::Draw() const
 			numberPos.Y() += 5.; // + 0.5 * font.Height();
 			font.Draw(number, numberPos, elsewhereColor);
 		}
-	
+
+		// using high / low with these ringshaders is not tested. probably doesn't work
+		if(escort.high[0] > escort.low[0])
+			RingShader::Draw(pos, 19., 1.5, escort.high[0], shield2Color, 6.);
 		RingShader::Draw(pos, 19., 1.5, escort.low[0], shieldColor, 6.);
+		if(escort.high[1] > escort.low[1])
+			RingShader::Draw(pos, 19., 1.5, escort.high[1], hull2Color, 6.);
 		RingShader::Draw(pos, 15., 1.5, escort.low[1], hullColor, 6.); //Color(.33, .99, .11, 0)
 
-		Point from(pos.X() + 19., pos.Y() - 9.5);
+		Point from(pos.X() + 19., pos.Y() - 9.);
 		for(int i = 2; i < 5; ++i)
 		{
-            // Draw the status bars.
-            static const Color barColor[] = {
-                energyColor, energy2Color, 
-                heatColor, heat2Color,
-                fuelColor,fuel2Color
-            };
+			// Draw the status bars.
+			static const Color barColor[] = {
+				energyColor, energy2Color, 
+				heatColor, heat2Color,
+				fuelColor,fuel2Color
+			};
 			// If the low and high levels are different, draw a fully opaque bar up
 			// to the low limit, and half-transparent up to the high limit.
 			if(escort.high[i] > 0.)
@@ -139,14 +150,14 @@ void EscortDisplay::Draw() const
 		
 		// Draw the system name for any escort not in the current system.
 		if(!escort.system.empty())
-			font.Draw(escort.system, pos + Point(30., 5.), elsewhereColor);
+			font.Draw(escort.system, pos + Point(28., 5.), elsewhereColor);
 
 		// Show only as many escorts as we have room for on screen.
-		if(pos.Y() > top)
-			pos.Y() -= Icon::Height;
-		else if(pos.X() < Screen::Left() + 60.)
+		if(pos.Y() > end.Y())
+			pos.Y() -= 40.; //Icon::Height;
+		else if(pos.X() < end.X())
 			pos.X() += escortWidth,
-			pos.Y() = Screen::Bottom() - 19.;
+			pos.Y() = Screen::Bottom() - 19.5;
 		else
 			break;
 	}
@@ -196,22 +207,18 @@ void EscortDisplay::MergeStacks() const
 	if(icons.empty())
 		return;
 	
-	int maxHeight = (Screen::Bottom() - top) * columns;
 	set<const Sprite *> unstackable;
 	while(true)
 	{
 		Icon *cheapest = nullptr;
 		
-		int height = 0;
 		for(Icon &icon : icons)
 		{
 			if(unstackable.find(icon.sprite) == unstackable.end() && (!cheapest || *cheapest < icon))
 				cheapest = &icon;
-			
-			height += Icon::Height;
 		}
 		
-		if(height < maxHeight || !cheapest)
+		if(icons.size() <= iconsPerColumn * columns || !cheapest)
 			break;
 		
 		// Merge all other instances of this ship's sprite with this icon.

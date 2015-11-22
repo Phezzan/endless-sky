@@ -38,6 +38,7 @@ outfit "Ionic Afterburner"
 
 outfit "X1700 Ion Thruster"
 	category "Engines"
+	secure
 	"cost" 12000
 	thumbnail "outfit/tiny ion thruster"
 	"mass" 16
@@ -54,6 +55,7 @@ outfit "X1700 Ion Thruster"
 
 outfit "X2700 Ion Thruster"
 	category "Engines"
+	secure
 	"cost" 26000
 	thumbnail "outfit/small ion thruster"
 	"mass" 27
@@ -70,6 +72,7 @@ outfit "X2700 Ion Thruster"
 
 outfit "X3700 Ion Thruster"
 	category "Engines"
+	secure
 	"cost" 58000
 	thumbnail "outfit/medium ion thruster"
 	"mass" 46
@@ -86,6 +89,7 @@ outfit "X3700 Ion Thruster"
 
 outfit "X4700 Ion Thruster"
 	category "Engines"
+	secure
 	"cost" 128000
 	thumbnail "outfit/large ion thruster"
 	"mass" 79
@@ -102,6 +106,7 @@ outfit "X4700 Ion Thruster"
 
 outfit "X5700 Ion Thruster"
 	category "Engines"
+	secure
 	"cost" 281000
 	thumbnail "outfit/huge ion thruster"
 	"mass" 134
@@ -118,6 +123,7 @@ outfit "X5700 Ion Thruster"
 
 outfit "X1200 Ion Steering"
 	category "Engines"
+	secure
 	"cost" 10000
 	thumbnail "outfit/tiny ion steering"
 	"mass" 12
@@ -131,6 +137,7 @@ outfit "X1200 Ion Steering"
 
 outfit "X2200 Ion Steering"
 	category "Engines"
+	secure
 	"cost" 21000
 	thumbnail "outfit/small ion steering"
 	"mass" 20
@@ -144,6 +151,7 @@ outfit "X2200 Ion Steering"
 
 outfit "X3200 Ion Steering"
 	category "Engines"
+	secure
 	"cost" 46000
 	thumbnail "outfit/medium ion steering"
 	"mass" 35
@@ -157,6 +165,7 @@ outfit "X3200 Ion Steering"
 
 outfit "X4200 Ion Steering"
 	category "Engines"
+	secure
 	"cost" 102000
 	thumbnail "outfit/large ion steering"
 	"mass" 59
@@ -170,6 +179,7 @@ outfit "X4200 Ion Steering"
 
 outfit "X5200 Ion Steering"
 	category "Engines"
+	secure
 	"cost" 225000
 	thumbnail "outfit/huge ion steering"
 	"mass" 100
@@ -184,6 +194,7 @@ outfit "X5200 Ion Steering"
 
 outfit "Chipmunk Plasma Thruster"
 	category "Engines"
+	secure
 	"cost" 20000
 	thumbnail "outfit/tiny plasma thruster"
 	"mass" 20
@@ -200,6 +211,7 @@ outfit "Chipmunk Plasma Thruster"
 
 outfit "Greyhound Plasma Thruster"
 	category "Engines"
+	secure
 	"cost" 45000
 	thumbnail "outfit/small plasma thruster"
 	"mass" 34
@@ -216,6 +228,7 @@ outfit "Greyhound Plasma Thruster"
 
 outfit "Impala Plasma Thruster"
 	category "Engines"
+	secure
 	"cost" 99000
 	thumbnail "outfit/medium plasma thruster"
 	"mass" 58
@@ -232,6 +245,7 @@ outfit "Impala Plasma Thruster"
 
 outfit "Orca Plasma Thruster"
 	category "Engines"
+	secure
 	"cost" 217000
 	thumbnail "outfit/large plasma thruster"
 	"mass" 98
@@ -248,6 +262,7 @@ outfit "Orca Plasma Thruster"
 
 outfit "Tyrant Plasma Thruster"
 	category "Engines"
+	secure
 	"cost" 478000
 	thumbnail "outfit/huge plasma thruster"
 	"mass" 167
@@ -264,6 +279,7 @@ outfit "Tyrant Plasma Thruster"
 
 outfit "Chipmunk Plasma Steering"
 	category "Engines"
+	secure
 	"cost" 16000
 	thumbnail "outfit/tiny plasma steering"
 	"mass" 15
@@ -277,6 +293,7 @@ outfit "Chipmunk Plasma Steering"
 
 outfit "Greyhound Plasma Steering"
 	category "Engines"
+	secure
 	"cost" 36000
 	thumbnail "outfit/small plasma steering"
 	"mass" 26
@@ -290,6 +307,7 @@ outfit "Greyhound Plasma Steering"
 
 outfit "Impala Plasma Steering"
 	category "Engines"
+	secure
 	"cost" 79000
 	thumbnail "outfit/medium plasma steering"
 	"mass" 43
@@ -303,6 +321,7 @@ outfit "Impala Plasma Steering"
 
 outfit "Orca Plasma Steering"
 	category "Engines"
+	secure
 	"cost" 174000
 	thumbnail "outfit/large plasma steering"
 	"mass" 74
@@ -316,6 +335,7 @@ outfit "Orca Plasma Steering"
 
 outfit "Tyrant Plasma Steering"
 	category "Engines"
+	secure
 	"cost" 382000
 	thumbnail "outfit/huge plasma steering"
 	"mass" 125
@@ -330,6 +350,7 @@ outfit "Tyrant Plasma Steering"
 
 outfit "A120 Atomic Thruster"
 	category "Engines"
+	secure
 	"cost" 140000
 	thumbnail "outfit/tiny atomic thruster"
 	"mass" 22
@@ -345,6 +366,7 @@ outfit "A120 Atomic Thruster"
 
 outfit "A250 Atomic Thruster"
 	category "Engines"
+	secure
 	"cost" 280000
 	thumbnail "outfit/small atomic thruster"
 	"mass" 34
@@ -360,6 +382,7 @@ outfit "A250 Atomic Thruster"
 
 outfit "A370 Atomic Thruster"
 	category "Engines"
+	secure
 	"cost" 560000
 	thumbnail "outfit/medium atomic thruster"
 	"mass" 53
@@ -375,6 +398,7 @@ outfit "A370 Atomic Thruster"
 
 outfit "A520 Atomic Thruster"
 	category "Engines"
+	secure
 	"cost" 1120000
 	thumbnail "outfit/large atomic thruster"
 	"mass" 82
@@ -390,6 +414,7 @@ outfit "A520 Atomic Thruster"
 
 outfit "A860 Atomic Thruster"
 	category "Engines"
+	secure
 	"cost" 2240000
 	thumbnail "outfit/huge atomic thruster"
 	"mass" 127
@@ -405,6 +430,7 @@ outfit "A860 Atomic Thruster"
 
 outfit "A125 Atomic Steering"
 	category "Engines"
+	secure
 	"cost" 120000
 	thumbnail "outfit/tiny atomic steering"
 	"mass" 16
@@ -417,6 +443,7 @@ outfit "A125 Atomic Steering"
 
 outfit "A255 Atomic Steering"
 	category "Engines"
+	secure
 	"cost" 240000
 	thumbnail "outfit/small atomic steering"
 	"mass" 25
@@ -429,6 +456,7 @@ outfit "A255 Atomic Steering"
 
 outfit "A375 Atomic Steering"
 	category "Engines"
+	secure
 	"cost" 480000
 	thumbnail "outfit/medium atomic steering"
 	"mass" 38
@@ -441,6 +469,7 @@ outfit "A375 Atomic Steering"
 
 outfit "A525 Atomic Steering"
 	category "Engines"
+	secure
 	"cost" 960000
 	thumbnail "outfit/large atomic steering"
 	"mass" 60
@@ -453,6 +482,7 @@ outfit "A525 Atomic Steering"
 
 outfit "A865 Atomic Steering"
 	category "Engines"
+	secure
 	"cost" 1920000
 	thumbnail "outfit/huge atomic steering"
 	"mass" 92

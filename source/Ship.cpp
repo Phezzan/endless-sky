@@ -31,11 +31,12 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include <cmath>
 
 using namespace std;
+#define SYSDOWN(x) (isDisabled & SYSDOWN_##x)
 
 void Ship::Initialize()
 {
 	if(!neverDisabled)
-		minimumHull = static_cast<unsigned>( max(.125 * attributes.Get("hull"), min(.50 * attributes.Get("hull"), 999.)));
+		minimumHull = static_cast<unsigned>( max(.20 * attributes.Get("hull"), min(.50 * attributes.Get("hull"), 1000.)));
 	else
 		minimumHull = 0;
 	JumpFuel();
@@ -513,7 +514,7 @@ void Ship::SetPersonality(const Personality &other)
 	{
 		//shields = 0.;
 		//hull = .5 * MinimumHull();
-		isDisabled = true;
+		isDisabled = SYSDOWN_Disabled | SYSDOWN_Shield;
 	}
 }
 
@@ -560,7 +561,7 @@ bool Ship::Move(list<Effect> &effects)
 	if((!isSpecial && forget >= 1000) || !currentSystem)
 		return false;
 	isInSystem = false;
-	if(!fuel || !(attributes.Get("hyperdrive") || attributes.Get("jump drive")))
+	if(!fuel || SYSDOWN(FTL) || !(attributes.Get("hyperdrive") || attributes.Get("jump drive")))
 		hyperspaceSystem = nullptr;
 	
 	double mass = Mass();
@@ -604,31 +605,40 @@ bool Ship::Move(list<Effect> &effects)
 	shields = min(shields, maxShields);
 	double maxHull = attributes.Get("hull");
 	hull = min(hull, maxHull);
-	bool problems = isOverheated || isDisabled;
+	double ramscoop = attributes.Get("ramscoop");
 
 	// Update ship supply levels.
-	if(!problems)
 	{
-		energy += attributes.Get("energy generation") - ionization;
-		energy = max(0., energy);
-		heat += attributes.Get("heat generation");
-		heat -= attributes.Get("cooling");
-		heat = max(0., heat);
-		
-		// Hull repair.
-		double oldHull = hull;
-		hull = min(hull + attributes.Get("hull repair rate"), maxHull);
-		static const double HULL_EXCHANGE_RATE = 1.;
-		energy -= HULL_EXCHANGE_RATE * (hull - oldHull);
-		
-		// Recharge shields, but only up to the max. If there is extra shield
-		// energy, use it to recharge fighters and drones.
-		shields += attributes.Get("shield generation");
-		static const double SHIELD_EXCHANGE_RATE = 0.86;
-		energy -= SHIELD_EXCHANGE_RATE * attributes.Get("shield generation");
-		double excessShields = max(0., shields - maxShields);
-		shields -= excessShields;
-		
+		if (!(SYSDOWN(Power) || isOverheated))
+		{
+			energy += attributes.Get("energy generation") - ionization;
+			heat += attributes.Get("heat generation");		// not all heat gen is from power... but most is...
+		}
+
+		if(energy>0.)
+			heat -= attributes.Get("cooling");	// heat can dissipate even if cooling systems are off
+	
+		{
+			// Hull repair.
+			double repair = attributes.Get("hull repair rate");
+			double oldHull = hull;
+			hull = min(hull + repair, maxHull);
+			static const double HULL_EXCHANGE_RATE = 1.;
+			energy -= HULL_EXCHANGE_RATE * (hull - oldHull);
+		}
+
+		double excessShields = (SYSDOWN_Shield & isDisabled) ? 0.:attributes.Get("shield generation");
+		if (excessShields > 0. && shields < maxShields && energy > 0.)
+		{
+			// Recharge shields, but only up to the max. If there is extra shield
+			// energy, use it to recharge fighters and drones.
+			double regen = min(maxShields - shields, excessShields);
+			shields += regen;
+			static const double SHIELD_EXCHANGE_RATE = 0.86;
+			energy -= SHIELD_EXCHANGE_RATE * regen;
+			excessShields -= regen;
+		}
+
 		for(Bay &bay : fighterBays)
 		{
 			if(!bay.ship)
@@ -659,15 +669,15 @@ bool Ship::Move(list<Effect> &effects)
 				excessShields -= extra;
 			}
 		}
-		// If you do not need the shield generation, apply the extra back to
-		// your energy. On the other hand, if recharging shields drives your
-		// energy negative, undo that part of the recharge.
-		energy += SHIELD_EXCHANGE_RATE * excessShields;
-		if(energy < 0.)
-		{
-			shields += energy / SHIELD_EXCHANGE_RATE;
-			energy = 0.;
-		}
+
+
+		// If you have a ramscoop, you recharge enough fuel to make one jump in
+		// a little less than a minute - enough to be an inconvenience without
+		// being totally aggravating.
+		if(ramscoop > 0.)
+			TransferFuel(sqrt(ramscoop) * -(0.03 + .002 * pow(velocity.LengthSquared(), 0.35)), nullptr);
+		energy = max(0., energy);
+		heat = max(0., heat);
 	}
 	
 	
@@ -871,17 +881,17 @@ bool Ship::Move(list<Effect> &effects)
 		
 		return true;
 	}
+	else if (queueExplosion)
+	{
+		queueExplosion--;
+		hull *= 0.96;
+		CreateExplosion(effects, true);
+	}
 	else 
 	{
-		// If you have a ramscoop, you recharge enough fuel to make one jump in
-		// a little less than a minute - enough to be an inconvenience without
-		// being totally aggravating.
-		double ramscoop = attributes.Get("ramscoop");
-		if(ramscoop > 0.)
-			TransferFuel(sqrt(ramscoop) * -(0.028 + .002 * pow(velocity.LengthSquared(), 0.34)), nullptr);
-
 		double cloakingSpeed = attributes.Get("cloak");
-		if(commands.Has(Command::CLOAK) && cloakingSpeed && !problems && !hyperspaceCount 
+		if(commands.Has(Command::CLOAK) && cloakingSpeed && !hyperspaceCount 
+			&& !isOverheated && !(SYSDOWN_Cloak & isDisabled)
 			&& zoom == 1.)
 		{
 			double cloakFuel  = attributes.Get("cloaking fuel");
@@ -923,20 +933,33 @@ bool Ship::Move(list<Effect> &effects)
 		int const rndCrew = (requiredCrew<1) ? 0: static_cast<int>(Random::Int(requiredCrew));
 		if(rndCrew > crew)
 		{
-			pilotCheck = -10 * requiredCrew + 5 * crew;
+			pilotCheck = max(-60, min(-20, -20 - 5 * (rndCrew - crew)));
 			if (this->GetGovernment()->IsPlayer())
 				Messages::Add("Your ship is moving erratically because you do not have enough crew to pilot it.");
 		}
 		else 
 		{
-			pilotCheck = 30 + rndCrew;
+			pilotCheck = max(60, min(20, 30 + 5*(crew - rndCrew)));
 
 			// allow crew to repair the hull... slowly
-			if(hull > 0. && hull < maxHull && crew > rndCrew)
+			if(hull >= 0. && hull < maxHull && crew > rndCrew)
 			{
-				hull += (crew - rndCrew);
-				if(isDisabled && Random::Int(static_cast<int>(hull)) >= minimumHull)
-					UpdateDisabled();
+				hull += (crew - rndCrew) * max(0.5, min(2., sqrt(minimumHull)/sqrt(hull)));
+				if(SYSDOWN(Damaged) && 
+					Random::Int(static_cast<int>(hull)) >= minimumHull)
+				{
+					ostringstream out;
+#define REPAIR(x)   do{isDisabled ^= SYSDOWN_##x; \
+	if(isYours){out << Name() << " repaired "#x; Messages::Add(out.str());}\
+	}while(0)
+					if (hull > minimumHull && SYSDOWN(Hull)){	REPAIR(Hull);}
+					else if (SYSDOWN(Power)){					REPAIR(Power);}
+					else if (SYSDOWN(Engine)){					REPAIR(Engine);}
+					else if (SYSDOWN(Shield)){					REPAIR(Shield);}
+					else if (SYSDOWN(Cloak)){					REPAIR(Cloak);}
+					else if (SYSDOWN(FTL)){						REPAIR(FTL);}
+					else if (SYSDOWN(Cooling)){					REPAIR(Cooling);}
+				}
 			}
 		}
 		UpdateStrength();
@@ -944,7 +967,7 @@ bool Ship::Move(list<Effect> &effects)
 	
 	// This ship is not landing or entering hyperspace. So, move it. If it is
 	// disabled, all it can do is slow down to a stop.
-	if(problems)
+	if(isOverheated || SYSDOWN(Engine))
 		velocity *= 1. - attributes.Get("drag") / mass;
 	else if(pilotCheck > 0)
 	{
@@ -1021,32 +1044,36 @@ bool Ship::Move(list<Effect> &effects)
 	// Boarding:
 	if(isBoarding && (commands.Has(Command::FORWARD | Command::BACK) || commands.Turn()))
 		isBoarding = false;
-	shared_ptr<Ship> target = (CanBeCarried() ? GetParent() : GetTargetShip());
-	if(target && !problems)
+	shared_ptr<Ship> dock = (CanBeCarried() ? GetParent() : GetTargetShip());
+	if(dock && !(isOverheated || SYSDOWN(Disabled)))
 	{
-		Point dp = (target->position - position);
+		Point dp = (dock->position - position);
 		double distance = dp.Length();
-		Point dv = (target->velocity - velocity);
+		Point dv = (dock->velocity - velocity);
 		double speed = dv.Length();
 		isBoarding |= (distance < 50. && speed < 1. && commands.Has(Command::BOARD));
 		if(isBoarding && !CanBeCarried())
 		{
-			if(!target->IsDisabled() && government->IsEnemy(target->government))
+			if(  (!dock->IsDisabled() && government->IsEnemy(dock->government))
+			  || (dock->IsDestroyed() || dock->IsLanding() || dock->IsHyperspacing()
+				  || dock->GetSystem() != GetSystem()))
+			{
 				isBoarding = false;
-			else if(target->IsDestroyed() || target->IsLanding() || target->IsHyperspacing()
-					|| target->GetSystem() != GetSystem())
-				isBoarding = false;
+				dock->UnsetBoarder(shared_from_this());
+			}
+			else if (dock->GetBoarder() != shared_from_this())
+				dock->SetBoarder(shared_from_this());
 		}
 		if(isBoarding && pilotCheck > 0)
 		{
 			Angle facing = angle;
-			bool left = target->Unit().Cross(facing.Unit()) < 0.;
+			bool left = dock->Unit().Cross(facing.Unit()) < 0.;
 			double turn = left - !left;
 			
 			// Check if the ship will still be pointing to the same side of the target
 			// angle if it turns by this amount.
 			facing += TurnRate() * turn;
-			bool stillLeft = target->Unit().Cross(facing.Unit()) < 0.;
+			bool stillLeft = dock->Unit().Cross(facing.Unit()) < 0.;
 			if(left != stillLeft)
 				turn = 0.;
 			angle += TurnRate() * turn;
@@ -1059,11 +1086,7 @@ bool Ship::Move(list<Effect> &effects)
 				isBoarding = false;
 				hasBoarded = true;
 			}
-			else if (target->GetBoarder() != shared_from_this())
-				target->SetBoarder(shared_from_this());
 		}
-		else
-			target->SetBoarder(shared_ptr<Ship>());
 	}
 	
 	// And finally: move the ship!
@@ -1123,19 +1146,30 @@ shared_ptr<Ship> Ship::Board(bool autoPlunder)
 		victim->AddFighter(shared_from_this());
 		return shared_ptr<Ship>();
 	}
-	
+
+
 	// Board a ship of your own government to repair/refuel it.
 	if(!government->IsEnemy(victim->GetGovernment()))
 	{
 		SetShipToAssist(shared_ptr<Ship>());
-		bool helped = victim->isDisabled;
-		victim->CapturedBy(shared_ptr<Ship>()); // TODO
+		bool helped = victim->IsDisabled();
+		victim->CapturedBy(shared_ptr<Ship>());
 		//victim->isDisabled = false;
 		// Transfer some fuel if needed.
 		if(!victim->JumpsRemaining() && CanRefuel(*victim))
 		{
 			helped = true;
 			TransferFuel(victim->JumpFuel(), victim.get());
+		}
+		if (victim->GetGovernment() == government && victim->ShieldsRaw() < shields)
+		{
+			double amt = min(shields - victim->ShieldsRaw(), 180. * attributes.Get("shield generation"));
+			if (shields > amt)
+			{
+				helped = true;
+				victim->shields += amt;
+				shields -= amt;
+			}
 		}
 		if(helped)
 		{
@@ -1158,11 +1192,13 @@ shared_ptr<Ship> Ship::Board(bool autoPlunder)
 			stolen = 0;
 			for(auto &it : victim->outfits)
 			{
-				// Don't allow other ships to steal engines or hyperdrives. It's
-				// unrealistic, but a stolen hyperdrive is the one thing you
-				// might fail to notice and land anyways, in which case your
-				// game may autosave in a state where you are stranded.
-				if(it.first->Get("hyperdrive") ||  it.first->Get("jump drive"))
+				// Don't allow other ships to steal 'secure' outfits.
+				// These are probably well integrated into your ship, 
+				// or so important they'll be behind your defensive troops.
+				// Allowing the enemy to take them without a fight is 
+				// unrealistic,... and having your hyperdrive stolen 
+				// in an empty system is very troublesome.
+				if(it.first->isSecure())
 					continue;
 				
 				int count = it.second;
@@ -1303,39 +1339,44 @@ bool Ship::IsTargetable() const
 	return (zoom == 1. && !explosionRate && !forget && cloak < 1. && hull > 0.);
 }
 
-
-
 bool Ship::IsOverheated() const
 {
 	return isOverheated;
 }
 
-
-
-bool Ship::IsDisabled() const
+unsigned Ship::IsDisabled(unsigned flags) const
 {
-	return isDisabled;
+	return (isDisabled & flags);
+}
+unsigned Ship::IsDisabled() const
+{
+	return SYSDOWN(Disabled);
 }
 
 bool Ship::UpdateDisabled()
 {
 	if (crew < 1 && RequiredCrew() > 0)
 	{
-		isDisabled = true;
+		isDisabled |= SYSDOWN_Crew;
 		SetGovernment(GameData::Governments().Get("Derelict"));
 
 		SetPersonality(Personality::Derelict());
 	}
-	else 
-		isDisabled = hull < minimumHull;
+	else if (hull < minimumHull && !SYSDOWN(Hull))
+		isDisabled |= SYSDOWN_Hull;
 
-	if (isDisabled && commands.Has(Command::BOARD))
+	// Disabled ships can no longer board
+	if (SYSDOWN(Disabled) && commands.Has(Command::BOARD))
 	{
 		shared_ptr<Ship> target = GetTargetShip();
-		if (target != nullptr)
-			target->SetBoarder(shared_ptr<Ship>());
+		if (target)
+		{
+			shared_ptr<Ship> boarder = target->GetBoarder();
+			if (boarder == shared_from_this())
+				target->SetBoarder(shared_ptr<Ship>());
+		}
 	}
-	return isDisabled;
+	return 0 != SYSDOWN(Disabled);
 }
 
 
@@ -1444,7 +1485,7 @@ int Ship::CheckHyperspace() const
 // 1 = hyperdrive, 2 = scram drive, 3 = jump drive).
 unsigned Ship::HyperspaceType() const
 {
-	if(IsDisabled())
+	if(IsDisabled(SYSDOWN_Hyper))
 		return NO_HYPERSPACE;
 	const System *destination = GetTargetSystem();
 	if(!destination)
@@ -1549,6 +1590,7 @@ void Ship::Recharge(bool atSpaceport)
 	if(atSpaceport)
 	{
 		crew = max(crew, RequiredCrew());
+		isDisabled &= ~SYSDOWN_Crew;
 		fuel = attributes.Get("fuel capacity");
 	}
 	pilotCheck = 0;
@@ -1616,7 +1658,7 @@ void Ship::CapturedBy(const shared_ptr<Ship> &capturer)
 	SetTargetPlanet(nullptr);
 	SetTargetSystem(nullptr);
 	commands.Clear();
-	isDisabled = false;
+	isDisabled &= ~SYSDOWN_Hyper;	// Shields and Aux (cooling / cloak ) are not insta-fixed
 	hyperspaceSystem = nullptr;
 }
 
@@ -1813,11 +1855,15 @@ int Ship::TakeDamage(const Projectile &projectile, bool isBlast)
 	double radiationDamage = weapon.RadiationDamage();
 	bool wasDisabled = IsDisabled();
 	bool wasDestroyed = IsDestroyed();
+	double anger = -1.* Mass() / (500. - 100. * personality.IsForbearing());
 	
 	if(shields > shieldDamage)
 	{
 		shields -= shieldDamage;
-		heat += max(.5 * heatDamage - armor, 0.);
+		anger   += shieldDamage / shields;
+		heatDamage = max(.5 * heatDamage - armor, 0.);
+		heat += heatDamage;
+		anger += heatDamage/10000.;
 		ionization += .25 * ionDamage;
 	}
 	else if(!shields || shieldDamage)
@@ -1830,8 +1876,12 @@ int Ship::TakeDamage(const Projectile &projectile, bool isBlast)
 			radiationDamage *= shieldReduction;
 			shields = 0.;
 		}
-		hull -= max(hullDamage - armorTmp, 0.);
-		heat += max(heatDamage - armorTmp, 0.);
+		hullDamage  = max(hullDamage - armorTmp, 0.);
+		hull       -= hullDamage;
+		anger 	   += hullDamage *10. / hull;
+		heatDamage  = max(heatDamage - armorTmp, 0.);
+		heat 	   += heatDamage;
+		anger 	   += heatDamage / 10000.;
 		ionization += ionDamage;
 		if (radiationDamage > armorTmp)
 		{
@@ -1841,12 +1891,67 @@ int Ship::TakeDamage(const Projectile &projectile, bool isBlast)
 				radiationDamage = radiationDamage - armorTmp;
 				double loss = radiationDamage - Random::Int(hull / crewTmp);
 				if (loss > 1)
-					crew -= pow(loss, 0.33);
+				{
+					loss = pow(loss, 0.33);
+					crew -= loss;
+					anger += loss;
+				}
 			}
 		}
+		if (hullDamage > hull/50. && hull * 2. < attributes.Get("hull") )
+		{
+			ostringstream out;
+			int rand = Random::Int(static_cast<int>(hullDamage));
+#define DISABLE(x)	do{	if(isYours && !SYSDOWN(x)){\
+							out << Name() << ": "#x" damaged";\
+							Messages::Add(out.str());\
+						}\
+						isDisabled |= SYSDOWN_##x; \
+				   	}while(0)
+			switch(rand % 0x20)
+			{
+			case 0x10: DISABLE(Cloak);	break;
+			case 0x11: DISABLE(Cooling);break;
+			case 0x12: DISABLE(FTL);	break;
+			case 0x13: DISABLE(Cloak);	break;
+			case 0x14: DISABLE(Cooling);break;
+			case 0x15: DISABLE(FTL);	break;
+			case 0x16: DISABLE(Shield);	break;
+			case 0x17: DISABLE(Engine);	break;
+			case 0x18: DISABLE(Power);	break;
+			case 0x19: DISABLE(Cloak);	break;
+			case 0x1a: DISABLE(Cooling);break;
+			case 0x1b: DISABLE(FTL);	break;
+			case 0x1c: DISABLE(Shield);	break;
+			case 0x1d: DISABLE(Engine);	break;
+			case 0x1e: DISABLE(Power);	break;
+			case 0x1f:
+				{  int m;
+				   if (hull < minimumHull && 
+					   Random::Int(minimumHull) > hull &&
+					   (m = (Mass() / 100u))
+					   < crew - isYours)
+				   {
+					   unsigned const ejected = Random::Int((crew-isYours)/m);
+					   queueExplosion = 1;
+					   isDisabled |= SYSDOWN_Hull;
+					   if (ejected > 0)
+					   {
+						   crew -= ejected;
+						   if (isYours)
+						   {   out << Name() << ": Hull breach !! "<< ejected << " crew lost!!";
+							   Messages::Add(out.str());
+						   }
+					   }
+				   }
+			   }
+			default:   break;
+			}
+		}
+
 		UpdateDisabled();
 	}
-	
+
 	if(hitForce && !IsHyperspacing())
 	{
 		Point d = position - projectile.Position();
@@ -1861,9 +1966,8 @@ int Ship::TakeDamage(const Projectile &projectile, bool isBlast)
 		type |= ShipEvent::DESTROY;
 	// If this ship was hit directly and did not consider itself an enemy of the
 	// ship that hit it, it is now "provoked" against that government.
-	if(!isBlast && projectile.GetGovernment() && !projectile.GetGovernment()->IsEnemy(government)
-			&& hullDamage > armor && (Shields() < .88 || !personality.IsForbearing())
-			&& !personality.IsPacifist())
+	if(!isBlast && anger > 0. && /*hasgov && */ !projectile.IsEnemy(government)
+		&& !personality.IsPacifist())
 		type |= ShipEvent::PROVOKE;
 	
 	return type;
@@ -2152,6 +2256,11 @@ shared_ptr<Ship> Ship::GetShipToAssist() const
 }
 
 
+bool Ship::HasBoarder() const
+{
+	return !boarder.expired();
+}
+
 shared_ptr<Ship> Ship::GetBoarder() const
 {
 	return boarder.lock();
@@ -2192,11 +2301,22 @@ void Ship::SetShipToAssist(const shared_ptr<Ship> &ship)
 }
 
 
-void Ship::SetBoarder(const shared_ptr<Ship> &ship)
+bool Ship::SetBoarder(const std::weak_ptr<Ship> &ship) //const shared_ptr<Ship> &ship)
 {
-	boarder = ship;
+	if (SYSDOWN(Disabled))
+	{
+		boarder = ship;
+		return true;
+	}
+	return false;
 }
 
+void Ship::UnsetBoarder(const shared_ptr<Ship> &ship)
+{
+	if (  (ship == nullptr)
+		||(boarder.lock() == ship))
+		boarder.reset();
+}
 
 void Ship::SetTargetPlanet(const StellarObject *object)
 {
@@ -2269,10 +2389,8 @@ void Ship::RemoveEscort(const Ship &ship)
 
 bool Ship::CannotAct() const
 {
-	return (zoom != 1. || isDisabled || hyperspaceCount || (pilotCheck < 0) || cloak);
+	return (zoom != 1. || SYSDOWN(Disabled)	|| hyperspaceCount || (pilotCheck < 0) || cloak);
 }
-
-
 
 unsigned Ship::MinimumHull() const
 {
@@ -2310,7 +2428,8 @@ void Ship::CreateExplosion(list<Effect> &effects, bool spread)
 				effectVelocity += Angle::Random().Unit() * (scale * Random::Real());
 			}
 			effects.back().Place(angle.Rotate(point) + position, effectVelocity, angle);
-			++explosionCount;
+			if (IsDestroyed())
+				++explosionCount;
 			return;
 		}
 	}

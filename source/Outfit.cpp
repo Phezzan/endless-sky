@@ -56,6 +56,8 @@ void Outfit::Load(const DataNode &node)
 			description += child.Token(1);
 			description += '\n';
 		}
+		else if(child.Token(0) == "secure")
+			secure = true;
 		else if(child.Size() >= 2)
 			attributes[child.Token(0)] = child.Value(1);
 	}
@@ -90,6 +92,10 @@ int64_t Outfit::Cost() const
 }
 
 
+bool Outfit::isSecure() const
+{
+	return secure;
+}
 
 // Get the image to display in the outfitter when buying this item.
 const Sprite *Outfit::Thumbnail() const

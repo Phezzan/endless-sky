@@ -322,9 +322,9 @@ system "Al Dhanab"
 	trade Metal 262
 	trade Plastic 317
 	fleet "Small Core Merchants" 400
-	fleet "Large Core Merchants" 400
+	fleet "Large Core Merchants" 1400
 	fleet "Small Syndicate" 1000
-	fleet "Large Syndicate" 800
+	fleet "Large Syndicate" 1800
 	fleet "Small Core Pirates" 2000
 	fleet "Large Core Pirates" 3000
 	object
@@ -384,8 +384,8 @@ system Albaldah
 	trade Plastic 343
 	fleet "Small Southern Merchants" 600
 	fleet "Large Southern Merchants" 1000
-	fleet "Small Southern Pirates" 800
-	fleet "Large Southern Pirates" 1200
+	fleet "Small Southern Pirates" 1500
+	fleet "Large Southern Pirates" 2000
 	fleet "Small Militia" 1400
 	fleet "Large Militia" 2400
 	fleet Quarg 3000
@@ -679,8 +679,8 @@ system Aldhibain
 	fleet "Large Southern Merchants" 600
 	fleet "Small Militia" 600
 	fleet "Large Militia" 1000
-	fleet "Small Southern Pirates" 800
-	fleet "Large Southern Pirates" 2000
+	fleet "Small Southern Pirates" 1200
+	fleet "Large Southern Pirates" 2400
 	object
 		sprite star/k0
 		period 10
@@ -4155,8 +4155,8 @@ system "Ehma Ti"
 	trade Medical 915
 	trade Metal 188
 	trade Plastic 532
-	fleet "Small Unfettered" 500
-	fleet "Large Unfettered" 500
+	fleet "Small Unfettered" 1500
+	fleet "Large Unfettered" 1500
 	fleet "Large Hai" 2800
 	object
 		sprite star/k0
@@ -5633,8 +5633,8 @@ system "Hi Yahr"
 	trade Medical 825
 	trade Metal 308
 	trade Plastic 372
-	fleet "Small Unfettered" 500
-	fleet "Large Unfettered" 500
+	fleet "Small Unfettered" 1500
+	fleet "Large Unfettered" 1500
 	fleet "Large Hai" 2800
 	object
 		sprite star/g5
@@ -11965,8 +11965,8 @@ system "Wah Ki"
 	trade Metal 338
 	trade Plastic 432
 	fleet "Small Hai" 1200
-	fleet "Large Hai" 500
-	fleet "Large Unfettered" 800
+	fleet "Large Hai" 1500
+	fleet "Large Unfettered" 1800
 	fleet "Small Northern Merchants" 18000
 	fleet "Large Northern Merchants" 28000
 	object
@@ -12101,8 +12101,8 @@ system "Wah Yoot"
 	trade Metal 248
 	trade Plastic 472
 	fleet "Small Unfettered" 1000
-	fleet "Large Unfettered" 500
-	fleet "Large Hai" 800
+	fleet "Large Unfettered" 1500
+	fleet "Large Hai" 1800
 	object
 		sprite star/g0
 		period 10
@@ -12160,8 +12160,8 @@ system Waypoint
 	trade Medical 745
 	trade Metal 478
 	trade Plastic 452
-	fleet "Small Hai" 1200
-	fleet "Large Hai" 2500
+	fleet "Small Hai" 1600
+	fleet "Large Hai" 3000
 	fleet "Small Northern Merchants" 18000
 	fleet "Large Northern Merchants" 28000
 	object

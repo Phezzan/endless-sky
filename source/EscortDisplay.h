@@ -59,8 +59,8 @@ private:
 	void MergeStacks() const;
 	
 private:
-    mutable int top = -1;
-    mutable int columns = 1;
+    mutable unsigned iconsPerColumn = 0;
+    mutable unsigned columns = 0;
 	mutable std::vector<Icon> icons;
 };
 
