@@ -112,25 +112,36 @@ void TradingPanel::Draw() const
 	FillShader::Fill(Point(-60., FIRST_Y + 20 * selectedRow + 33), Point(480., 20.), back);
 	
 	const Font &font = FontSet::Get(14);
-	Color unselected = *GameData::Colors().Get("medium");
-	Color selected = *GameData::Colors().Get("bright");
+
+	static Color const selected[] = {
+		*GameData::Colors().Get("brightGreen"),
+		*GameData::Colors().Get("brightYellow"),
+		*GameData::Colors().Get("brightRed"),
+		*GameData::Colors().Get("bright"),
+	};
+	static Color const unselected[] = {
+		*GameData::Colors().Get("mediumGreen"),
+		*GameData::Colors().Get("mediumYellow"),
+		*GameData::Colors().Get("mediumRed"),
+		*GameData::Colors().Get("medium"),
+	};
 	
 	int y = FIRST_Y;
-	FillShader::Fill(Point(-60., y + 15.), Point(480., 1.), unselected);
+	FillShader::Fill(Point(-60., y + 15.), Point(480., 1.), unselected[3]);
 	
-	font.Draw("Commodity", Point(NAME_X, y), selected);
-	font.Draw("Price", Point(PRICE_X, y), selected);
+	font.Draw("Commodity", Point(NAME_X, y), selected[3]);
+	font.Draw("Price", Point(PRICE_X, y), selected[3]);
 	
 	string mod = "x " + to_string(Modifier());
-	font.Draw(mod, Point(BUY_X, y), unselected);
-	font.Draw(mod, Point(SELL_X, y), unselected);
+	font.Draw(mod, Point(BUY_X, y), unselected[3]);
+	font.Draw(mod, Point(SELL_X, y), unselected[3]);
 	
-	font.Draw("In Hold", Point(HOLD_X, y), selected);
+	font.Draw("In Hold", Point(HOLD_X, y), selected[3]);
 	
 	y += 5;
 	int lastY = y + 20 * GameData::Commodities().size() + 25;
-	font.Draw("free:", Point(SELL_X + 5, lastY), selected);
-	font.Draw(to_string(player.Cargo().Free()), Point(HOLD_X, lastY), selected);
+	font.Draw("free:", Point(SELL_X + 5, lastY), selected[3]);
+	font.Draw(to_string(player.Cargo().Free()), Point(HOLD_X, lastY), selected[3]);
 	
 	int outfits = player.Cargo().OutfitsSize();
 	int missionCargo = player.Cargo().MissionCargoSize();
@@ -143,7 +154,7 @@ void TradingPanel::Draw() const
 			str += " tons of plundered outfits.";
 		else
 			str += " tons of mission cargo.";
-		font.Draw(str, Point(NAME_X, lastY), unselected);
+		font.Draw(str, Point(NAME_X, lastY), unselected[3]);
 	}
 	
 	int i = 0;
@@ -153,18 +164,19 @@ void TradingPanel::Draw() const
 		y += 20;
 		int price = system.Trade(commodity.name);
 		
-		const Color &color = (i++ == selectedRow ? selected : unselected);
-		font.Draw(commodity.name, Point(NAME_X, y), color);
+		const Color *color = (i++ == selectedRow ? selected : unselected);
+		font.Draw(commodity.name, Point(NAME_X, y), color[3]);
 		
 		if(price)
 		{
-			font.Draw(to_string(price), Point(PRICE_X, y), color);
+			font.Draw(to_string(price), Point(PRICE_X, y), color[3]);
 		
 			int basis = player.GetBasis(commodity.name);
 			if(basis && basis != price)
 			{
+				unsigned col = price > basis ? 0: (basis > price ? 2: 3);
 				string profit = "(profit: " + to_string(price - basis) + ")";
-				font.Draw(profit, Point(LEVEL_X, y), color);
+				font.Draw(profit, Point(LEVEL_X, y), color[col]);
 			}
 			else
 			{
@@ -175,18 +187,18 @@ void TradingPanel::Draw() const
 					level = 4;
 				else
 					level = (5 * level) / (commodity.high - commodity.low);
-				font.Draw(TRADE_LEVEL[level], Point(LEVEL_X, y), color);
+				font.Draw(TRADE_LEVEL[level], Point(LEVEL_X, y), color[(level > 2)+(level >= 2)]);
 			}
 		
-			font.Draw("[buy]", Point(BUY_X, y), color);
-			font.Draw("[sell]", Point(SELL_X, y), color);
+			font.Draw("[buy]", Point(BUY_X, y), color[3]);
+			font.Draw("[sell]", Point(SELL_X, y), color[3]);
 		}
 		
 		int hold = player.Cargo().Get(commodity.name);
 		if(hold)
 		{
 			canSell |= (price != 0);
-			font.Draw(to_string(hold), Point(HOLD_X, y), selected);
+			font.Draw(to_string(hold), Point(HOLD_X, y), selected[3]);
 		}
 	}
 	

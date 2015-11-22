@@ -12,6 +12,22 @@ color bright .75 .75 .75 0.
 color medium .5 .5 .5 0.
 color dim .25 .25 .25 0.
 color faint .1 .1 .1 0.
+
+color brightYellow .7 .7  .4 0.
+color mediumYellow .5 .5 .3 0.
+color dimYellow .3 .3 .2 0.
+color faintYellow .2 .2 .1 0.
+
+color brightGreen .5 .8  .5 0.
+color mediumGreen .4 .6 .4 0.
+color dimGreen .2 .4 .2 0.
+color faintGreen .1 .3 .1 0.
+
+color brightRed .8 .5 .5 0.
+color mediumRed .6 .4 .4 0.
+color dimRed .4 .2 .2 0.
+color faintRed .3 .1 .1 0.
+
 color "heat" .8 .3 .3 .75
 color "heat2" .4 .1 .1 0
 color "energy" .9 .9 .2 .75
