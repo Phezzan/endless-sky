@@ -58,7 +58,7 @@ ship "ArgoNavis"
 		"required crew" 2
 		"bunks" 15
 		"mass" 292
-		"drag" 5.5
+		"drag" 5.9
 		"heat dissipation" .75
 		"cargo space" 130
 		"outfit space" 345
@@ -66,10 +66,10 @@ ship "ArgoNavis"
 		"engine capacity" 95
 		"fuel capacity" 550
 		weapon
-			"blast radius" 60
-			"shield damage" 600
-			"hull damage" 300
-			"hit force" 900
+			"blast radius" 80
+			"shield damage" 800
+			"hull damage" 400
+			"hit force" 1200
 	outfits
 		"Heavy Laser" 4
 		"Heavy Anti-Missile Turret"
